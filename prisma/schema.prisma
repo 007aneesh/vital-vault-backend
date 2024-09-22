@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Organisation {
+  id             String     @id @default(auto()) @map("_id") @db.ObjectId
+  userName       String
+  email          String     @unique
+  contactNo      Int
+  secContact     Int
+  password       String
+  cpassword      String
+  orgName        String
+  registrationNo Int
+  address        String
+  pinCode        Int
+  city           String
+  state          String
+  planSelected   String
+  verified       Boolean?   @default(false)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  employees      Employee[]
+  tokens         OrgToken[]
+}
+
+model Employee {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  email          String       @unique
+  name           String
+  password       String
+  contactNo      Int
+  position       String
+  organisationId String       @db.ObjectId
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  accessLevel    AccessLevel
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  tokens         EmpToken[]
+}
+
+model Patient {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  patientId        Int?
+  aadharNumber     Int
+  email            String
+  guardianName     String
+  emergencyContact Int
+  name             String
+  gender           String
+  contact          Int
+  password         String
+  image            String?
+  orgName          String[] @default([])
+  tokens           Token[]
+  verified         Boolean? @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  Report           Report[]
+}
+
+model Token {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  token     String
+  patientId String  @db.ObjectId
+  patient   Patient @relation(fields: [patientId], references: [id])
+}
+
+model OrgToken {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  token           String
+  organisationId  String      @db.ObjectId
+  organisation    Organisation @relation(fields: [organisationId], references: [id])
+  createdAt       DateTime    @default(now())
+}
+
+model EmpToken {
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
+  token           String
+  employeeId      String      @db.ObjectId
+  employee        Employee    @relation(fields: [employeeId], references: [id])
+  createdAt       DateTime    @default(now())
+}
+
+model Report {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  patientId    String?  @db.ObjectId
+  aadharNumber Int
+  image        String
+  description  String
+  dataType     String
+  signedBy     String
+  orgName      String
+  verified     Boolean? @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  patient      Patient? @relation(fields: [patientId], references: [id])
+}
+
+enum AccessLevel {
+  READ
+  WRITE
+  MODIFY
+}
