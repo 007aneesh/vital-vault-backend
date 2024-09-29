@@ -9,14 +9,12 @@ datasource db {
 
 model Organisation {
   id             String     @id @default(auto()) @map("_id") @db.ObjectId
-  userName       String
+  userName       String     @unique
   email          String     @unique
-  contactNo      Int
+  contactNo      Int        @unique
   secContact     Int
   password       String
-  cpassword      String
-  orgName        String
-  registrationNo Int
+  orgName        String     @unique
   address        String
   pinCode        Int
   city           String
@@ -26,7 +24,6 @@ model Organisation {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   employees      Employee[]
-  tokens         OrgToken[]
 }
 
 model Employee {
@@ -41,7 +38,6 @@ model Employee {
   accessLevel    AccessLevel
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  tokens         EmpToken[]
 }
 
 model Patient {
@@ -57,34 +53,10 @@ model Patient {
   password         String
   image            String?
   orgName          String[] @default([])
-  tokens           Token[]
   verified         Boolean? @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   Report           Report[]
-}
-
-model Token {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  token     String
-  patientId String  @db.ObjectId
-  patient   Patient @relation(fields: [patientId], references: [id])
-}
-
-model OrgToken {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
-  token           String
-  organisationId  String      @db.ObjectId
-  organisation    Organisation @relation(fields: [organisationId], references: [id])
-  createdAt       DateTime    @default(now())
-}
-
-model EmpToken {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
-  token           String
-  employeeId      String      @db.ObjectId
-  employee        Employee    @relation(fields: [employeeId], references: [id])
-  createdAt       DateTime    @default(now())
 }
 
 model Report {
