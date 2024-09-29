@@ -17,7 +17,13 @@ export const verifyAccessToken = async (
     token,
     String(process.env.ACCESS_TOKEN_SECRET),
     (err: any, payload: any) => {
-      if (err) return sendError(res, "Unauthorised", 401);
+      if (err){
+        if(err.name === 'JsonWebTokenError'){
+            return sendError(res, "Unauthorised", 401);
+        }else{
+            return sendError(res, err.message, 401);
+        }
+      }
       req.payload = payload;
       next();
     }

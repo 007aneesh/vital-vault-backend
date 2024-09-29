@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import express from "express";
 import cors from "cors";
 import auth from "./routes/auth";
+import { verifyAccessToken } from "./middlewares/verify_access_token";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 8001;
@@ -15,7 +16,7 @@ app.use(
 app.use(express.json());
 app.use(cors());
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", verifyAccessToken, (req: Request, res: Response) => {
   res.send({ message: "Server is Up and Running" });
 });
 

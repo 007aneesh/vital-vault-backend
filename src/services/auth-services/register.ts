@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../utils/db";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
-import { signAccessToken } from "../../utils/jwt_helper";
+import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
 
 export const register = async (req: Request, res: Response) => {
   let {
@@ -53,12 +53,14 @@ export const register = async (req: Request, res: Response) => {
   });
 
   const accessToken = await signAccessToken(newOrganisation.id);
+  const refreshToken = await signRefreshToken(newOrganisation.id);
 
   sendSuccess(
     res,
     {
       message: "Organization registered successfully",
-      token: accessToken,
+      accessToken,
+      refreshToken,
     },
     201
   );
