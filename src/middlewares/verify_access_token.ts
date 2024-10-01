@@ -7,8 +7,7 @@ export const verifyAccessToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.headers["authorization"])
-    return sendError(res, "Unauthorised", 401);
+  if (!req.headers["authorization"]) return sendError(res, "Unauthorised", 401);
 
   const authHeader = req.headers["authorization"];
   const bearerToken = authHeader.split(" ");
@@ -17,11 +16,11 @@ export const verifyAccessToken = async (
     token,
     String(process.env.ACCESS_TOKEN_SECRET),
     (err: any, payload: any) => {
-      if (err){
-        if(err.name === 'JsonWebTokenError'){
-            return sendError(res, "Unauthorised", 401);
-        }else{
-            return sendError(res, err.message, 401);
+      if (err) {
+        if (err.name === "JsonWebTokenError") {
+          return sendError(res, "Unauthorised", 401);
+        } else {
+          return sendError(res, err.message, 401);
         }
       }
       req.payload = payload;

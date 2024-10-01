@@ -11,7 +11,6 @@ export const register = async (req: Request, res: Response) => {
     contactNo,
     secContact,
     password,
-    cpassword,
     orgName,
     address,
     pinCode,
@@ -20,21 +19,7 @@ export const register = async (req: Request, res: Response) => {
     planSelected,
   } = req.body;
 
-  const existingOrganisation = await prisma.organisation.findFirst({
-    where: {
-      OR: [{ email }, { userName }, { contactNo }, { orgName }],
-    },
-  });
-
-  if (existingOrganisation) {
-    return sendError(res, "Organization already exists!", 400);
-  }
-
-  if (password.trim() !== cpassword.trim()) {
-    return sendError(res, "Confirm password and password don't match");
-  }
-
-  password = await bcrypt.hash(password, 10);
+  const hash_password = await bcrypt.hash(password, 10);
 
   const newOrganisation = await prisma.organisation.create({
     data: {
@@ -42,7 +27,7 @@ export const register = async (req: Request, res: Response) => {
       email,
       contactNo,
       secContact,
-      password,
+      password: hash_password,
       orgName,
       address,
       pinCode,
@@ -52,8 +37,11 @@ export const register = async (req: Request, res: Response) => {
     },
   });
 
-  const accessToken = await signAccessToken(newOrganisation.id);
-  const refreshToken = await signRefreshToken(newOrganisation.id);
+  const accessTokenPromise = signAccessToken(newOrganisation.id);
+  const refreshTokenPromise = signRefreshToken(newOrganisation.id);
+
+  const [accessToken, refreshToken] = await Promise.all([accessTokenPromise, refreshTokenPromise]);
+
 
   sendSuccess(
     res,
