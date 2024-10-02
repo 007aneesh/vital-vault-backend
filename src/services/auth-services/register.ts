@@ -3,38 +3,43 @@ import { prisma } from "../../utils/db";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
+import { registerSchema } from "../../validations/auth_validation";
+import { checkUniqueFields } from "../../middlewares/schema_vaidation";
 
 export const register = async (req: Request, res: Response) => {
-  let {
+  const result = registerSchema.safeParse(req.body);
+
+  if (!result.success) {
+    const error = result.error.issues.map((issue) => issue.message).join(", ");
+    return sendError(res, error, 400);
+  }
+
+  const {
     userName,
     email,
     contactNo,
     secContact,
     password,
-    cpassword,
     orgName,
     address,
     pinCode,
     city,
     state,
     planSelected,
-  } = req.body;
+  } = result.data;
 
-  const existingOrganisation = await prisma.organisation.findFirst({
-    where: {
-      OR: [{ email }, { userName }, { contactNo }, { orgName }],
-    },
+  const uniqueErrors = await checkUniqueFields("organisation", {
+    userName,
+    email,
+    contactNo,
+    orgName,
   });
 
-  if (existingOrganisation) {
-    return sendError(res, "Organization already exists!", 400);
+  if (uniqueErrors) {
+    return sendError(res, uniqueErrors.join(", "), 400);
   }
 
-  if (password.trim() !== cpassword.trim()) {
-    return sendError(res, "Confirm password and password don't match");
-  }
-
-  password = await bcrypt.hash(password, 10);
+  const hash_password = await bcrypt.hash(password, 10);
 
   const newOrganisation = await prisma.organisation.create({
     data: {
@@ -42,7 +47,7 @@ export const register = async (req: Request, res: Response) => {
       email,
       contactNo,
       secContact,
-      password,
+      password: hash_password,
       orgName,
       address,
       pinCode,
@@ -52,15 +57,25 @@ export const register = async (req: Request, res: Response) => {
     },
   });
 
-  const accessToken = await signAccessToken(newOrganisation.id);
-  const refreshToken = await signRefreshToken(newOrganisation.id);
+  const accessTokenPromise = signAccessToken(newOrganisation.id);
+  const refreshTokenPromise = signRefreshToken(newOrganisation.id);
+
+  const [accessToken, refreshToken] = await Promise.all([
+    accessTokenPromise,
+    refreshTokenPromise,
+  ]);
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
 
   sendSuccess(
     res,
     {
       message: "Organization registered successfully",
       accessToken,
-      refreshToken,
     },
     201
   );

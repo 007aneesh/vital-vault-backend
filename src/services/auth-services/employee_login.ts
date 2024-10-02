@@ -4,21 +4,23 @@ import { sendError, sendSuccess } from "../../utils/handle_response";
 import { isValidPassword } from "../../utils/password_validate";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
 
-export const adminLogin = async (req: Request, res: Response) => {
-  const { userName, password } = req.body;
-  const existingAdmin = await prisma.organisation.findFirst({
+export const employeeLogin = async (req: Request, res: Response) => {
+
+  const { username, password } = req.body;
+  const existingEmployee = await prisma.employee.findFirst({
     where: {
-      userName,
+      username,
     },
   });
 
-  if (!existingAdmin) {
-    return sendError(res, "Organisation not registered!!");
+  if (!existingEmployee) {
+    sendError(res, "Employee not registered with organisation!!");
+    return;
   }
 
-  if (await isValidPassword(password, existingAdmin?.password!)) {
-    const accessTokenPromise = signAccessToken(existingAdmin?.id);
-    const refreshTokenPromise = signRefreshToken(existingAdmin?.id);
+  if (await isValidPassword(password, existingEmployee?.password!)) {
+    const accessTokenPromise = signAccessToken(existingEmployee?.id);
+    const refreshTokenPromise = signRefreshToken(existingEmployee?.id);
 
     const [accessToken, refreshToken] = await Promise.all([
       accessTokenPromise,

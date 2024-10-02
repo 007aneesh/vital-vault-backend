@@ -28,6 +28,7 @@ model Organisation {
 
 model Employee {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  username       String       @unique
   email          String       @unique
   name           String
   password       String
@@ -42,10 +43,9 @@ model Employee {
 
 model Patient {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  patientId        Int?
-  aadharNumber     Int
-  email            String
-  guardianName     String
+  aadharNumber     Int      @unique
+  email            String   @unique
+  guardianName     String?
   emergencyContact Int
   name             String
   gender           String
@@ -62,7 +62,6 @@ model Patient {
 model Report {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   patientId    String?  @db.ObjectId
-  aadharNumber Int
   image        String
   description  String
   dataType     String

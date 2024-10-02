@@ -4,21 +4,22 @@ import { sendError, sendSuccess } from "../../utils/handle_response";
 import { isValidPassword } from "../../utils/password_validate";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
 
-export const adminLogin = async (req: Request, res: Response) => {
-  const { userName, password } = req.body;
-  const existingAdmin = await prisma.organisation.findFirst({
+export const patientLogin = async (req: Request, res: Response) => {
+
+  const { aadharNumber, password } = req.body;
+  const existingUser = await prisma.patient.findFirst({
     where: {
-      userName,
+      aadharNumber,
     },
   });
 
-  if (!existingAdmin) {
-    return sendError(res, "Organisation not registered!!");
+  if (!existingUser) {
+    return sendError(res, "Patient not registered!!");
   }
 
-  if (await isValidPassword(password, existingAdmin?.password!)) {
-    const accessTokenPromise = signAccessToken(existingAdmin?.id);
-    const refreshTokenPromise = signRefreshToken(existingAdmin?.id);
+  if (await isValidPassword(password, existingUser?.password!)) {
+    const accessTokenPromise = signAccessToken(existingUser?.id);
+    const refreshTokenPromise = signRefreshToken(existingUser?.id);
 
     const [accessToken, refreshToken] = await Promise.all([
       accessTokenPromise,
@@ -32,7 +33,8 @@ export const adminLogin = async (req: Request, res: Response) => {
     });
 
     return sendSuccess(res, { accessToken });
-  } else {
-    return sendError(res, "Invalid Credentials", 401);
   }
+  
+  sendError(res, "Invalid Credentials", 401);
+
 };
