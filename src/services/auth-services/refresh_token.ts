@@ -8,19 +8,29 @@ export const refreshToken = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { refreshToken } = req.body;
+  const { refreshToken } = req.cookies;
 
   if (!refreshToken) return sendError(res, "Bad Request", 400);
 
-  const userId = await verifyRefreshToken(refreshToken);
+  try {
+    const userId = await verifyRefreshToken(refreshToken);
 
-  const accessTokenPromise = signAccessToken(userId);
-  const refreshTokenPromise = signRefreshToken(userId);
+    const accessTokenPromise = signAccessToken(userId);
+    const refreshTokenPromise = signRefreshToken(userId);
 
-  const [accessToken, newRefreshToken] = await Promise.all([
-    accessTokenPromise,
-    refreshTokenPromise,
-  ]);
+    const [accessToken, newRefreshToken] = await Promise.all([
+      accessTokenPromise,
+      refreshTokenPromise,
+    ]);
 
-  sendSuccess(res, { accessToken, refreshToken: newRefreshToken });
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    sendSuccess(res, { accessToken });
+  } catch (error) {
+    sendError(res, "Invalid Refresh Token", 403);
+  }
 };

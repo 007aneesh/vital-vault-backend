@@ -26,7 +26,13 @@ export const patientLogin = async (req: Request, res: Response) => {
       refreshTokenPromise,
     ]);
 
-    return sendSuccess(res, { accessToken, refreshToken });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return sendSuccess(res, { accessToken });
   }
   
   sendError(res, "Invalid Credentials", 401);
