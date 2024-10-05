@@ -4,7 +4,7 @@ export const registerSchema = z.object({
   userName: z.string().min(6, "Username must be at least 6 characters long"),
   email: z.string().email("Invalid email"),
   contactNo: z.number().min(1000000000, "Invalid contact number"),
-  secContact: z.number().min(1000000000, "Invalid contact number"),
+  secContact: z.number().min(1000000000, "Invalid contact number").optional(),
   password: z.string().min(4, "Password must be at least 6 characters long"),
   orgName: z
     .string()

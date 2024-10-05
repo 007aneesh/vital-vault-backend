@@ -12,7 +12,7 @@ model Organisation {
   userName       String     @unique
   email          String     @unique
   contactNo      Int        @unique
-  secContact     Int
+  secContact     Int?
   password       String
   orgName        String     @unique
   address        String
