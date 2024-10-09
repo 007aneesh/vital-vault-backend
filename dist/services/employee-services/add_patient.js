@@ -12,56 +12,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = void 0;
+exports.addPatient = void 0;
 const db_1 = require("../../utils/db");
 const handle_response_1 = require("../../utils/handle_response");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const jwt_helper_1 = require("../../utils/jwt_helper");
-const auth_validation_1 = require("../../validations/auth_validation");
-const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const patient_validation_1 = require("../../validations/patient_validation");
+const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = auth_validation_1.registerSchema.safeParse(req.body);
+        const result = patient_validation_1.patient_schema.safeParse(req.body);
         if (!result.success) {
             const error = result.error.issues
                 .map((issue) => issue.message)
                 .join(", ");
             return (0, handle_response_1.sendError)(res, error, 500);
         }
-        const { userName, email, contactNo, secContact, password, orgName, address, pinCode, city, state, planSelected, } = result.data;
+        const { aadharNumber, email, guardianName, emergencyContact, name, gender, contact, password, image, } = result.data;
         const hash_password = yield bcrypt_1.default.hash(password, 10);
-        const newOrganisation = yield db_1.prisma.organisation.create({
+        yield db_1.prisma.patient.create({
             data: {
-                userName,
+                aadharNumber: Number(aadharNumber),
                 email,
-                contactNo,
-                secContact,
+                guardianName,
+                emergencyContact,
+                name,
+                gender,
+                contact,
                 password: hash_password,
-                orgName,
-                address,
-                pinCode,
-                city,
-                state,
-                planSelected,
+                image,
             },
         });
-        const accessTokenPromise = (0, jwt_helper_1.signAccessToken)(newOrganisation.id);
-        const refreshTokenPromise = (0, jwt_helper_1.signRefreshToken)(newOrganisation.id);
-        const [accessToken, refreshToken] = yield Promise.all([
-            accessTokenPromise,
-            refreshTokenPromise,
-        ]);
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-        });
         return (0, handle_response_1.sendSuccess)(res, {
-            message: "Organization registered successfully",
-            accessToken,
+            message: "Patient registered successfully",
         }, 201);
     }
     catch (error) {
         return (0, handle_response_1.sendError)(res, "Internal server error", 500);
     }
 });
-exports.register = register;
+exports.addPatient = addPatient;

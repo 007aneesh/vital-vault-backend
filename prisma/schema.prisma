@@ -46,10 +46,10 @@ model Patient {
   aadharNumber     Int      @unique
   email            String   @unique
   guardianName     String?
-  emergencyContact Int
+  emergencyContact Int        
   name             String
   gender           String
-  contact          Int
+  contact          Int      @unique
   password         String
   image            String?
   orgName          String[] @default([])

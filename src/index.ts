@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import auth from "./routes/auth";
+import admin from "./routes/admin";
 
 import { verifyAccessToken } from "./middlewares/verify_access_token";
 
@@ -15,13 +16,15 @@ app.use(
     extended: true,
   })
 );
+
 app.use(express.json());
-app.use(cors(
-{
-  origin: ["http://localhost:3000"],
-  credentials: true
-}
-));
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  })
+);
+
 app.use(cookieParser());
 
 app.get("/", verifyAccessToken, (req: Request, res: Response) => {
@@ -29,6 +32,7 @@ app.get("/", verifyAccessToken, (req: Request, res: Response) => {
 });
 
 app.use("/auth", auth);
+app.use("/adm/v1", admin);
 
 app.listen(PORT, () => {
   console.log(`Server started at PORT: ${PORT}`);

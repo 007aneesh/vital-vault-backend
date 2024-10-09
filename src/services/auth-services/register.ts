@@ -4,7 +4,6 @@ import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
 import { registerSchema } from "../../validations/auth_validation";
-import { checkUniqueFields } from "../../middlewares/schema_vaidation";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -14,7 +13,7 @@ export const register = async (req: Request, res: Response) => {
       const error = result.error.issues
         .map((issue) => issue.message)
         .join(", ");
-      return sendError(res, error, 500);
+      return sendError(res, error, 400);
     }
 
     const {
@@ -30,17 +29,6 @@ export const register = async (req: Request, res: Response) => {
       state,
       planSelected,
     } = result.data;
-
-    const uniqueErrors = await checkUniqueFields("organisation", {
-      userName,
-      email,
-      contactNo,
-      orgName,
-    });
-
-    if (uniqueErrors) {
-      return sendError(res, uniqueErrors.join(", "), 400);
-    }
 
     const hash_password = await bcrypt.hash(password, 10);
 

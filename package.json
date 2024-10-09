@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "src/index",
   "scripts": {
-    "start": "nodemon src/index.ts",
-    "build" : "tsc"
+    "start": "nodemon dist/index.js",
+    "dev": "nodemon src/index.ts",
+    "build" : "tsc",
+    "build:models": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "aneesh",
