@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const add_employee_1 = require("../services/settings/add_employee");
+const add_patient_1 = require("../services/employee-services/add_patient");
 const router = express_1.default.Router();
-// employee registration routes
-router.post("/add-employee", add_employee_1.addEmployee);
+// app registration routes
+router.post("/add-patient", add_patient_1.addPatient);
 exports.default = router;

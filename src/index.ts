@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import auth from "./routes/auth";
 import admin from "./routes/admin";
+import employee from "./routes/employee";
 
 import { verifyAccessToken } from "./middlewares/verify_access_token";
 
@@ -33,6 +34,7 @@ app.get("/", verifyAccessToken, (req: Request, res: Response) => {
 
 app.use("/auth", auth);
 app.use("/adm/v1", admin);
+app.use("/emp/v1", employee);
 
 app.listen(PORT, () => {
   console.log(`Server started at PORT: ${PORT}`);

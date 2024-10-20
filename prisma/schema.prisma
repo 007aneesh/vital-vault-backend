@@ -8,37 +8,41 @@ datasource db {
 }
 
 model Organisation {
-  id             String     @id @default(auto()) @map("_id") @db.ObjectId
-  userName       String     @unique
-  email          String     @unique
-  contactNo      Int        @unique
-  secContact     Int?
-  password       String
-  orgName        String     @unique
-  address        String
-  pinCode        Int
-  city           String
-  state          String
-  planSelected   String
-  verified       Boolean?   @default(false)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
-  employees      Employee[]
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  userName     String     @unique
+  email        String     @unique
+  contactNo    Int        @unique
+  secContact   Int?
+  password     String
+  orgName      String     @unique
+  address      String
+  pinCode      Int
+  city         String
+  state        String
+  planSelected String
+  verified     Boolean?   @default(false)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  employees    Employee[]
+  patients     Patient[]
 }
 
 model Employee {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  username       String       @unique
-  email          String       @unique
+  id             String      @id @default(auto()) @map("_id") @db.ObjectId
+  username       String      @unique
+  email          String      @unique
   name           String
   password       String
   contactNo      Int
   position       String
-  organisationId String       @db.ObjectId
-  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  organisationId String      @db.ObjectId
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  patient        Patient[]
+  reports        Report[]
   accessLevel    AccessLevel
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  organisation Organisation @relation(fields: [organisationId], references: [id])
 }
 
 model Patient {
@@ -46,35 +50,42 @@ model Patient {
   aadharNumber     Int      @unique
   email            String   @unique
   guardianName     String?
-  emergencyContact Int        
+  emergencyContact Int
   name             String
   gender           String
   contact          Int      @unique
   password         String
   image            String?
-  orgName          String[] @default([])
+  addedBy          String   @db.ObjectId
+  organisationId   String   @db.ObjectId
   verified         Boolean? @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   Report           Report[]
+
+  organisation Organisation @relation(fields: [organisationId], references: [id])
+  employee     Employee     @relation(fields: [addedBy], references: [id])
 }
 
 model Report {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  patientId    String?  @db.ObjectId
-  image        String
-  description  String
-  dataType     String
-  signedBy     String
-  orgName      String
-  verified     Boolean? @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  patient      Patient? @relation(fields: [patientId], references: [id])
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  patientId   String?  @db.ObjectId
+  image       String?
+  description String
+  dataType    String
+  signedBy    String
+  addedBy     String   @db.ObjectId
+  verified    Boolean? @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  patient  Patient? @relation(fields: [patientId], references: [id])
+  employee Employee @relation(fields: [addedBy], references: [id])
 }
 
 enum AccessLevel {
   READ
   WRITE
   MODIFY
+  NONE
 }

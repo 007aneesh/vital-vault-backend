@@ -12,56 +12,56 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.register = void 0;
+exports.addEmployee = void 0;
 const db_1 = require("../../utils/db");
 const handle_response_1 = require("../../utils/handle_response");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const jwt_helper_1 = require("../../utils/jwt_helper");
-const auth_validation_1 = require("../../validations/auth_validation");
-const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const employee_validations_1 = require("../../validations/employee_validations");
+const crypto_1 = __importDefault(require("crypto"));
+const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = auth_validation_1.registerSchema.safeParse(req.body);
+        const result = employee_validations_1.employee_schema.safeParse(req.body);
         if (!result.success) {
             const error = result.error.issues
                 .map((issue) => issue.message)
                 .join(", ");
             return (0, handle_response_1.sendError)(res, error, 422);
         }
-        const { userName, email, contactNo, secContact, password, orgName, address, pinCode, city, state, planSelected, } = result.data;
+        const { username, email, name, contactNo, position, organisationId, accessLevel = "READ", } = result.data;
+        const accessLevelEnum = db_1.AccessLevel[accessLevel];
+        try {
+            const existingEmployee = yield db_1.prisma.employee.findUnique({
+                where: {
+                    username: username,
+                },
+            });
+            if (existingEmployee) {
+                return (0, handle_response_1.sendError)(res, "Employee already exists!", 400);
+            }
+        }
+        catch (error) {
+            return (0, handle_response_1.sendError)(res, "Internal server error", 500);
+        }
+        const password = crypto_1.default.randomBytes(32).toString("hex");
         const hash_password = yield bcrypt_1.default.hash(password, 10);
-        const newOrganisation = yield db_1.prisma.organisation.create({
+        yield db_1.prisma.employee.create({
             data: {
-                userName,
+                username,
                 email,
+                name,
                 contactNo,
-                secContact,
+                position,
+                organisationId,
+                accessLevel: accessLevelEnum,
                 password: hash_password,
-                orgName,
-                address,
-                pinCode,
-                city,
-                state,
-                planSelected,
             },
         });
-        const accessTokenPromise = (0, jwt_helper_1.signAccessToken)(newOrganisation.id);
-        const refreshTokenPromise = (0, jwt_helper_1.signRefreshToken)(newOrganisation.id);
-        const [accessToken, refreshToken] = yield Promise.all([
-            accessTokenPromise,
-            refreshTokenPromise,
-        ]);
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-        });
         return (0, handle_response_1.sendSuccess)(res, {
-            message: "Organization registered successfully",
-            accessToken,
+            message: "Employee registered successfully",
         }, 201);
     }
     catch (error) {
         return (0, handle_response_1.sendError)(res, "Internal server error", 500);
     }
 });
-exports.register = register;
+exports.addEmployee = addEmployee;

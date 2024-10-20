@@ -3,6 +3,7 @@ import { prisma } from "../../utils/db";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
 import { patient_schema } from "../../validations/patient_validation";
+import crypto from "crypto";
 
 export const addPatient = async (req: Request, res: Response) => {
   try {
@@ -12,7 +13,7 @@ export const addPatient = async (req: Request, res: Response) => {
       const error = result.error.issues
         .map((issue) => issue.message)
         .join(", ");
-      return sendError(res, error, 500);
+      return sendError(res, error, 422);
     }
 
     const {
@@ -23,34 +24,56 @@ export const addPatient = async (req: Request, res: Response) => {
       name,
       gender,
       contact,
-      password,
       image,
+      addedBy = "",
+      organisationId,
     } = result.data;
+
+    try {
+      const existingPatient = await prisma.patient.findUnique({
+        where: {
+          aadharNumber,
+        },
+      });
+      if (existingPatient) {
+        return sendError(res, "Patient already exists!", 400);
+      }
+    } catch (error) {
+      return sendError(res, "Internal server error", 500);
+    }
+
+    const password = crypto.randomBytes(32).toString("hex");
 
     const hash_password = await bcrypt.hash(password, 10);
 
-    await prisma.patient.create({
-      data: {
-        aadharNumber: Number(aadharNumber),
-        email,
-        guardianName,
-        emergencyContact,
-        name,
-        gender,
-        contact,
-        password: hash_password,
-        image,
-      },
-    });
+    try {
+      await prisma.patient.create({
+        data: {
+          aadharNumber,
+          email,
+          guardianName,
+          emergencyContact,
+          name,
+          gender,
+          contact,
+          password: hash_password,
+          image,
+          addedBy,
+          organisationId,
+        },
+      });
 
-    return sendSuccess(
-      res,
-      {
-        message: "Patient registered successfully",
-      },
-      201
-    );
+      return sendSuccess(
+        res,
+        {
+          message: "Patient registered successfully",
+        },
+        201
+      );
+    } catch (error) {
+      return sendError(res, `Failed to add patient!! ${error}`, 404);
+    }
   } catch (error) {
-    return sendError(res, "Internal server error", 500);
+    return sendError(res, `Internal server error`, 500);
   }
 };

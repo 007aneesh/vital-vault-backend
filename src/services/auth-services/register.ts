@@ -13,7 +13,7 @@ export const register = async (req: Request, res: Response) => {
       const error = result.error.issues
         .map((issue) => issue.message)
         .join(", ");
-      return sendError(res, error, 400);
+      return sendError(res, error, 422);
     }
 
     const {

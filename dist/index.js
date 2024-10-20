@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const admin_1 = __importDefault(require("./routes/admin"));
+const employee_1 = __importDefault(require("./routes/employee"));
 const verify_access_token_1 = require("./middlewares/verify_access_token");
 const app = (0, express_1.default)();
 const PORT = Number(process.env.PORT) || 8001;
@@ -25,6 +26,7 @@ app.get("/", verify_access_token_1.verifyAccessToken, (req, res) => {
 });
 app.use("/auth", auth_1.default);
 app.use("/adm/v1", admin_1.default);
+app.use("/emp/v1", employee_1.default);
 app.listen(PORT, () => {
     console.log(`Server started at PORT: ${PORT}`);
 });

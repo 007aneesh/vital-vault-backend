@@ -21,8 +21,8 @@ exports.patient_schema = zod_1.z.object({
         .number()
         .min(1000000000, "Invalid contact number")
         .max(9999999999, "Contact number cannot exceed 10 digits"),
-    password: zod_1.z.string().min(4, "Password must be at least 4 characters long"),
     image: zod_1.z.string().optional(),
-    orgName: zod_1.z.array(zod_1.z.string()).optional(),
+    addedBy: zod_1.z.string({ required_error: "Employee name is missing" }),
+    organisationId: zod_1.z.string({ required_error: "Organisation Id is missing" }),
     verified: zod_1.z.boolean().optional(),
 });
