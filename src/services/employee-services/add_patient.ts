@@ -71,7 +71,7 @@ export const addPatient = async (req: Request, res: Response) => {
         201
       );
     } catch (error) {
-      return sendError(res, `Failed to add patient!! ${error}`, 404);
+      return sendError(res, `Failed to add patient! ${error}`, 404);
     }
   } catch (error) {
     return sendError(res, `Internal server error`, 500);
