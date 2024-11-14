@@ -6,7 +6,7 @@
     "types": ["whatwg-url"],
     // "incremental": true,                              /* Save .tsbuildinfo files to allow for incremental compilation of projects. */
 
-    "target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "target": "es2021" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
     /* Modules */
     "module": "CommonJS" /* Specify what module code is generated. */,
     "outDir": "dist",
@@ -24,7 +24,9 @@
 
     /* Type Checking */
     "strict": true /* Enable all strict type-checking options. */,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
   "include": ["./src/**/*"]
 }

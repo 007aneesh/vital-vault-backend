@@ -2,6 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// generator typegraphql {
+//   provider = "typegraphql-prisma"
+// }
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -48,12 +52,12 @@ model Employee {
 model Patient {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   aadharNumber     Int      @unique
-  email            String   @unique
+  email            String   
   guardianName     String?
   emergencyContact Int
   name             String
   gender           String
-  contact          Int      @unique
+  contact          Int      
   password         String
   image            String?
   addedBy          String   @db.ObjectId

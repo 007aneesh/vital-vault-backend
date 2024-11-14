@@ -1,12 +1,9 @@
-import { Request, Response } from "express";
-
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import auth from "./routes/auth";
 import admin from "./routes/admin";
 import employee from "./routes/employee";
-
 import { verifyAccessToken } from "./middlewares/verify_access_token";
 
 const app = express();

@@ -18,7 +18,9 @@ const handle_response_1 = require("../../utils/handle_response");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const patient_validation_1 = require("../../validations/patient_validation");
 const crypto_1 = __importDefault(require("crypto"));
+const client_1 = require("@prisma/client");
 const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const result = patient_validation_1.patient_schema.safeParse(req.body);
         if (!result.success) {
@@ -51,11 +53,18 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             }, 201);
         }
         catch (error) {
-            return (0, handle_response_1.sendError)(res, `Failed to add patient!! ${error}`, 404);
+            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError &&
+                error.code === "P2002") {
+                const target = Array.isArray((_a = error.meta) === null || _a === void 0 ? void 0 : _a.target)
+                    ? (_b = error.meta) === null || _b === void 0 ? void 0 : _b.target[0]
+                    : "aadhar number";
+                return (0, handle_response_1.sendError)(res, `Duplicate entry found for ${target}`, 409);
+            }
+            return (0, handle_response_1.sendError)(res, `Failed to add patient!`, 404);
         }
     }
     catch (error) {
-        return (0, handle_response_1.sendError)(res, `Internal server error ${error}`, 500);
+        return (0, handle_response_1.sendError)(res, `Internal server error`, 500);
     }
 });
 exports.addPatient = addPatient;
