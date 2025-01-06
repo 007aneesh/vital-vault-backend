@@ -2,59 +2,47 @@ import { Request, Response } from "express";
 import organisationService from "../../services/settings/organisation_services";
 
 class OrganisationController {
-
-  async updateOrganisation(req: Request, res: Response) {
+  async updateOrganisation(req: any, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req?.payload?.id;
       const data = req.body;
+
       const updatedOrganisation = await organisationService.updateOrganisation(
         id,
         data
       );
-      res.json(updatedOrganisation);
+
+      res.status(200).json(updatedOrganisation);
     } catch (error) {
       res.status(500).json({ error: "Failed to update organisation" });
     }
   }
 
-  async deleteOrganisation(req: Request, res: Response) {
+  async deleteOrganisation(req: any, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req?.payload?.id;
       await organisationService.deleteOrganisation(id);
-      res.status(204).send();
+      res.status(200).json({ message: "Organisation deleted successfully" });
     } catch (error) {
       res.status(500).json({ error: "Failed to delete organisation" });
     }
   }
 
-  async changePassword(req: Request, res: Response) {
+  async changePassword(req: any, res: Response) {
     try {
-      const { id } = req.params;
-      const { newPassword } = req.body;
-      const updated = await organisationService.changePassword(id, newPassword);
-      if (!updated) {
-        return res.status(404).json({ error: "Organisation not found" });
+      const id = req?.payload?.id;
+      const { new_password } = req.body;
+      const updated = await organisationService.changePassword(
+        id,
+        new_password
+      );
+      if (updated) {
+        res.json({ message: "Password updated successfully" });
+      } else {
+        res.status(404).json({ error: "Organisation not found" });
       }
-      res.json({ message: "Password updated successfully" });
     } catch (error) {
       res.status(500).json({ error: "Failed to update password" });
-    }
-  }
-
-  async updateDetails(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const details = req.body;
-      const updatedOrganisation = await organisationService.updateDetails(
-        id,
-        details
-      );
-      if (!updatedOrganisation) {
-        return res.status(404).json({ error: "Organisation not found" });
-      }
-      res.json(updatedOrganisation);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to update organisation details" });
     }
   }
 }

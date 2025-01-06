@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
-import { prisma } from "../../utils/db";
+import { BloodGroup, Gender, prisma } from "../../utils/db";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
 import { patient_schema } from "../../validations/patient_validation";
 import crypto from "crypto";
-import { Prisma } from "@prisma/client";
 
 export const addPatient = async (req: Request, res: Response) => {
   try {
     const result = patient_schema.safeParse(req.body);
 
     if (!result.success) {
+      console.log(result.error.issues);
       const error = result.error.issues
         .map((issue) => issue.message)
         .join(", ");
@@ -18,36 +18,64 @@ export const addPatient = async (req: Request, res: Response) => {
     }
 
     const {
-      aadharNumber,
+      aadhar_number,
       email,
-      guardianName,
-      emergencyContact,
-      name,
+      guardian_name,
+      emergency_contact,
+      first_name,
+      last_name,
       gender,
-      contact,
-      image,
-      addedBy = "",
-      organisationId,
+      contact_number,
+      profile,
+      added_by = "",
+      organisation_id,
+      verified = false,
+      date_of_birth,
+      age,
+      blood_group,
+      settings = {},
     } = result.data;
 
-    const password = crypto.randomBytes(32).toString("hex");
+    try {
+      const existingPatient = await prisma.patient.findUnique({
+        where: {
+          aadhar_number,
+        },
+      });
+      if (existingPatient) {
+        return sendError(res, "Patient already exists!", 400);
+      }
+    } catch (error) {
+      return sendError(res, "Internal server error", 500);
+    }
+
+    const genderEnum = Gender[gender as keyof typeof Gender];
+    const bloodGroupEnum = BloodGroup[blood_group as keyof typeof BloodGroup];
+
+    const password = "password"; //crypto.randomBytes(32).toString("hex");
 
     const hash_password = await bcrypt.hash(password, 10);
 
     try {
       await prisma.patient.create({
         data: {
-          aadharNumber,
+          aadhar_number,
           email,
-          guardianName,
-          emergencyContact,
-          name,
-          gender,
-          contact,
+          guardian_name,
+          emergency_contact,
+          first_name,
+          last_name,
+          gender: genderEnum,
+          contact_number,
           password: hash_password,
-          image,
-          addedBy,
-          organisationId,
+          profile,
+          added_by,
+          organisation_id,
+          verified,
+          date_of_birth: new Date(date_of_birth),
+          age,
+          blood_group: bloodGroupEnum,
+          settings,
         },
       });
 
@@ -59,16 +87,7 @@ export const addPatient = async (req: Request, res: Response) => {
         201
       );
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2002"
-      ) {
-        const target: string | undefined = Array.isArray(error.meta?.target)
-          ? error.meta?.target[0]
-          : "aadhar number";
-        return sendError(res, `Duplicate entry found for ${target}`, 409);
-      }
-      return sendError(res, `Failed to add patient!`, 404);
+      return sendError(res, `Failed to add patient! ${error}`, 404);
     }
   } catch (error) {
     return sendError(res, `Internal server error`, 500);

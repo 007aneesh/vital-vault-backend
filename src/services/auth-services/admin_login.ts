@@ -6,10 +6,10 @@ import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
 
 export const adminLogin = async (req: Request, res: Response) => {
   try {
-    const { userName, password } = req.body;
+    const { username, password } = req.body;
     const existingAdmin = await prisma.organisation.findFirst({
       where: {
-        userName,
+        username,
       },
     });
 

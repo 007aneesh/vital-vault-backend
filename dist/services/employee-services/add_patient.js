@@ -17,35 +17,54 @@ const db_1 = require("../../utils/db");
 const handle_response_1 = require("../../utils/handle_response");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const patient_validation_1 = require("../../validations/patient_validation");
-const crypto_1 = __importDefault(require("crypto"));
-const client_1 = require("@prisma/client");
 const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
     try {
         const result = patient_validation_1.patient_schema.safeParse(req.body);
         if (!result.success) {
+            console.log(result.error.issues);
             const error = result.error.issues
                 .map((issue) => issue.message)
                 .join(", ");
             return (0, handle_response_1.sendError)(res, error, 422);
         }
-        const { aadharNumber, email, guardianName, emergencyContact, name, gender, contact, image, addedBy = "", organisationId, } = result.data;
-        const password = crypto_1.default.randomBytes(32).toString("hex");
+        const { aadhar_number, email, guardian_name, emergency_contact, first_name, last_name, gender, contact_number, profile, added_by = "", organisation_id, verified = false, date_of_birth, age, blood_group, settings = {}, } = result.data;
+        try {
+            const existingPatient = yield db_1.prisma.patient.findUnique({
+                where: {
+                    aadhar_number,
+                },
+            });
+            if (existingPatient) {
+                return (0, handle_response_1.sendError)(res, "Patient already exists!", 400);
+            }
+        }
+        catch (error) {
+            return (0, handle_response_1.sendError)(res, "Internal server error", 500);
+        }
+        const genderEnum = db_1.Gender[gender];
+        const bloodGroupEnum = db_1.BloodGroup[blood_group];
+        const password = "password"; //crypto.randomBytes(32).toString("hex");
         const hash_password = yield bcrypt_1.default.hash(password, 10);
         try {
             yield db_1.prisma.patient.create({
                 data: {
-                    aadharNumber,
+                    aadhar_number,
                     email,
-                    guardianName,
-                    emergencyContact,
-                    name,
-                    gender,
-                    contact,
+                    guardian_name,
+                    emergency_contact,
+                    first_name,
+                    last_name,
+                    gender: genderEnum,
+                    contact_number,
                     password: hash_password,
-                    image,
-                    addedBy,
-                    organisationId,
+                    profile,
+                    added_by,
+                    organisation_id,
+                    verified,
+                    date_of_birth: new Date(date_of_birth),
+                    age,
+                    blood_group: bloodGroupEnum,
+                    settings,
                 },
             });
             return (0, handle_response_1.sendSuccess)(res, {
@@ -53,14 +72,7 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             }, 201);
         }
         catch (error) {
-            if (error instanceof client_1.Prisma.PrismaClientKnownRequestError &&
-                error.code === "P2002") {
-                const target = Array.isArray((_a = error.meta) === null || _a === void 0 ? void 0 : _a.target)
-                    ? (_b = error.meta) === null || _b === void 0 ? void 0 : _b.target[0]
-                    : "aadhar number";
-                return (0, handle_response_1.sendError)(res, `Duplicate entry found for ${target}`, 409);
-            }
-            return (0, handle_response_1.sendError)(res, `Failed to add patient!`, 404);
+            return (0, handle_response_1.sendError)(res, `Failed to add patient! ${error}`, 404);
         }
     }
     catch (error) {

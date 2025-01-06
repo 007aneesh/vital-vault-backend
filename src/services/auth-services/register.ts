@@ -17,34 +17,46 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const {
-      userName,
+      username,
       email,
-      contactNo,
-      secContact,
+      contact,
+      secondary_contact,
       password,
-      orgName,
+      name,
       address,
-      pinCode,
-      city,
       state,
-      planSelected,
+      city,
+      pincode,
+      plan,
+      access_level = "ADMIN"
     } = result.data;
 
-    const hash_password = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const existingAdmin = await prisma.organisation.findFirst({
+      where: {
+        username,
+      },
+    });
+
+    if (existingAdmin) {
+      return sendError(res, "Organisation already registered!!");
+    }
 
     const newOrganisation = await prisma.organisation.create({
       data: {
-        userName,
+        username,
+        name,
         email,
-        contactNo,
-        secContact,
-        password: hash_password,
-        orgName,
+        contact,
+        secondary_contact,
+        password: hashedPassword,
         address,
-        pinCode,
-        city,
         state,
-        planSelected,
+        city,
+        pincode,
+        plan,
+        access_level
       },
     });
 
@@ -65,12 +77,12 @@ export const register = async (req: Request, res: Response) => {
     return sendSuccess(
       res,
       {
-        message: "Organization registered successfully",
         accessToken,
       },
       201
     );
   } catch (error) {
+    console.error(error);
     return sendError(res, "Internal server error", 500);
   }
 };

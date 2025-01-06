@@ -30,7 +30,7 @@ const deleteOrganisation = async (id: string): Promise<void> => {
   }
 };
 
-// Change Organisation Password
+// zChange Organisation Password
 const changePassword = async (
   id: string,
   newPassword: string
@@ -48,26 +48,8 @@ const changePassword = async (
   }
 };
 
-// Update specific details (e.g., email, contact, address)
-const updateDetails = async (
-  id: string,
-  details: Partial<Organisation>
-): Promise<Organisation> => {
-  try {
-    return await prisma.organisation.update({
-      where: { id },
-      data: {
-        ...details,
-      },
-    });
-  } catch (error) {
-    throw new Error(`Error updating organisation details: ${error}`);
-  }
-};
-
 export default {
   updateOrganisation,
   deleteOrganisation,
   changePassword,
-  updateDetails,
 };

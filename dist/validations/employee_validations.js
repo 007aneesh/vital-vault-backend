@@ -5,13 +5,57 @@ const zod_1 = require("zod");
 exports.employee_schema = zod_1.z.object({
     username: zod_1.z.string().min(6, "Username must be at least 6 characters long"),
     email: zod_1.z.string().email("Invalid email address"),
-    name: zod_1.z.string().min(1, "Name cannot be empty"),
-    contactNo: zod_1.z
-        .number()
-        .min(1000000000, "Invalid contact number")
-        .max(9999999999, "Contact number cannot exceed 10 digits"),
+    first_name: zod_1.z.string().min(1, "First Name cannot be empty"),
+    last_name: zod_1.z.string().min(1, "Last Name cannot be empty"),
+    contact_number: zod_1.z
+        .string() // Kept as string to accommodate 10-digit format
+        .length(10, "Contact number must be exactly 10 digits")
+        .regex(/^\d+$/, "Contact number must be numeric"),
     // password: z.string().min(4, "Password must be at least 4 characters long"),
-    position: zod_1.z.string(),
     organisationId: zod_1.z.string(),
-    accessLevel: zod_1.z.string(),
+    access_level: zod_1.z.enum(["READ", "WRITE", "MODIFY", "NONE"]), // Kept as enum for better validation
+    aadhar_number: zod_1.z
+        .string() // Kept as string to accommodate 12-digit format
+        .length(12, "Invalid Aadhar number")
+        .regex(/^\d+$/, "Aadhar number must be numeric"),
+    date_of_birth: zod_1.z.string().refine((date) => !isNaN(Date.parse(date)), {
+        message: "Invalid date format",
+    }),
+    age: zod_1.z.number().min(0, "Age must be a positive number"),
+    gender: zod_1.z.enum(["MALE", "FEMALE", "OTHER"]), // Kept as enum for better validation
+    blood_group: zod_1.z.enum([
+        "A_POSITIVE",
+        "A_NEGATIVE",
+        "B_POSITIVE",
+        "B_NEGATIVE",
+        "AB_POSITIVE",
+        "AB_NEGATIVE",
+        "O_POSITIVE",
+        "O_NEGATIVE",
+    ]), // Added enum for blood group
+    emergency_contact: zod_1.z
+        .string() // Kept as string to accommodate 10-digit format
+        .length(10, "Contact number must be exactly 10 digits")
+        .regex(/^\d+$/, "Contact number must be numeric"),
+    employment_details: zod_1.z.object({
+        // Updated employment_details structure
+        employee_code: zod_1.z.string().min(1, "Employee code cannot be empty"),
+        department: zod_1.z.enum([
+            "cardiology",
+            "orthopedics",
+            "pediatrics",
+            "general medicine",
+            "administration",
+        ]),
+        role: zod_1.z.enum(["doctor", "nurse", "technician", "admin"]),
+        access_level: zod_1.z.enum(["READ", "WRITE", "MODIFY"]),
+        date_of_joining: zod_1.z.string().refine((date) => !isNaN(Date.parse(date)), {
+            message: "Invalid date format for date of joining",
+        }),
+        experience_years: zod_1.z
+            .number()
+            .min(1, "Experience years must be at least 1")
+            .max(30, "Experience years cannot exceed 30"),
+        status: zod_1.z.enum(["active", "on_leave", "retired"]),
+    }),
 });

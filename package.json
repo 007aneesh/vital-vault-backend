@@ -15,18 +15,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^5.21.1",
-    "apollo-server-express": "^3.13.0",
+    "@prisma/client": "^6.0.1",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "express": "^4.21.0",
-    "graphql": "^16.9.0",
-    "graphql-scalars": "^1.23.0",
     "jsonwebtoken": "^9.0.2",
-    "reflect-metadata": "^0.2.2",
-    "type-graphql": "^2.0.0-rc.2",
-    "typegraphql-prisma": "^0.28.0",
     "whatwg-url": "^14.0.0",
     "zod": "^3.23.8"
   },
@@ -40,7 +34,7 @@
     "@types/react": "^18.3.9",
     "@types/whatwg-url": "^11.0.5",
     "nodemon": "^3.1.7",
-    "prisma": "^5.21.1",
+    "prisma": "^6.0.1",
     "ts-node": "^10.9.2"
   }
 }
