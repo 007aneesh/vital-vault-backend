@@ -20,18 +20,25 @@ const verifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         return (0, handle_response_1.sendError)(res, "Unauthorised", 401);
     const authHeader = req.headers["authorization"];
     const bearerToken = authHeader.split(" ");
+    if (bearerToken.length !== 2) {
+        return (0, handle_response_1.sendError)(res, "Unauthorized: Malformed token", 401);
+    }
     const token = bearerToken[1];
-    jsonwebtoken_1.default.verify(token, String(process.env.ACCESS_TOKEN_SECRET), (err, payload) => {
-        if (err) {
-            if (err.name === "JsonWebTokenError") {
-                return (0, handle_response_1.sendError)(res, "Unauthorised", 401);
-            }
-            else {
-                return (0, handle_response_1.sendError)(res, err.message, 401);
-            }
-        }
+    try {
+        const payload = jsonwebtoken_1.default.verify(token, String(process.env.ACCESS_TOKEN_SECRET));
         req.payload = payload;
         next();
-    });
+    }
+    catch (err) {
+        if (err.name === "JsonWebTokenError") {
+            return (0, handle_response_1.sendError)(res, "Unauthorized: Invalid token", 401);
+        }
+        else if (err.name === "TokenExpiredError") {
+            return (0, handle_response_1.sendError)(res, "Unauthorized: Token expired", 401);
+        }
+        else {
+            return (0, handle_response_1.sendError)(res, `Unauthorized: ${err.message}`, 401);
+        }
+    }
 });
 exports.verifyAccessToken = verifyAccessToken;

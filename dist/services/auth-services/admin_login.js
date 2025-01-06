@@ -16,10 +16,10 @@ const password_validate_1 = require("../../utils/password_validate");
 const jwt_helper_1 = require("../../utils/jwt_helper");
 const adminLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userName, password } = req.body;
+        const { username, password } = req.body;
         const existingAdmin = yield db_1.prisma.organisation.findFirst({
             where: {
-                userName,
+                username,
             },
         });
         if (!existingAdmin) {

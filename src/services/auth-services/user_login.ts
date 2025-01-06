@@ -6,10 +6,10 @@ import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
 
 export const patientLogin = async (req: Request, res: Response) => {
   try {
-    const { aadharNumber, password } = req.body;
+    const { aadhar_number, password } = req.body;
     const existingUser = await prisma.patient.findFirst({
       where: {
-        aadharNumber,
+        aadhar_number,
       },
     });
 

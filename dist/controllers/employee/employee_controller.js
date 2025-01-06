@@ -12,32 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const organisation_services_1 = __importDefault(require("../../services/settings/organisation_services"));
-class OrganisationController {
-    updateOrganisation(req, res) {
+const employee_services_1 = __importDefault(require("../../services/employee-services/employee_services"));
+class EmployeeController {
+    changeEmployeeDetails(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
                 const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
                 const data = req.body;
-                const updatedOrganisation = yield organisation_services_1.default.updateOrganisation(id, data);
-                res.status(200).json(updatedOrganisation);
+                const updatedEmployee = yield employee_services_1.default.updateDetails(id, data);
+                if (!updatedEmployee) {
+                    res.status(404).json({ error: "Employee not found" });
+                }
+                else {
+                    res.json(updatedEmployee);
+                }
             }
             catch (error) {
-                res.status(500).json({ error: "Failed to update organisation" });
-            }
-        });
-    }
-    deleteOrganisation(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a;
-            try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
-                yield organisation_services_1.default.deleteOrganisation(id);
-                res.status(200).json({ message: "Organisation deleted successfully" });
-            }
-            catch (error) {
-                res.status(500).json({ error: "Failed to delete organisation" });
+                res.status(500).json({ error: "Failed to update employee details" });
             }
         });
     }
@@ -47,12 +39,12 @@ class OrganisationController {
             try {
                 const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
                 const { new_password } = req.body;
-                const updated = yield organisation_services_1.default.changePassword(id, new_password);
-                if (updated) {
-                    res.json({ message: "Password updated successfully" });
+                const updatedEmployee = yield employee_services_1.default.changePassword(id, new_password);
+                if (!updatedEmployee) {
+                    res.status(404).json({ error: "Employee not found" });
                 }
                 else {
-                    res.status(404).json({ error: "Organisation not found" });
+                    res.json({ message: "Password updated successfully" });
                 }
             }
             catch (error) {
@@ -61,4 +53,4 @@ class OrganisationController {
         });
     }
 }
-exports.default = new OrganisationController();
+exports.default = new EmployeeController();

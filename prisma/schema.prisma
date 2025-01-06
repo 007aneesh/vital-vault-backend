@@ -8,84 +8,281 @@ datasource db {
 }
 
 model Organisation {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  userName     String     @unique
-  email        String     @unique
-  contactNo    Int        @unique
-  secContact   Int?
-  password     String
-  orgName      String     @unique
-  address      String
-  pinCode      Int
-  city         String
-  state        String
-  planSelected String
-  verified     Boolean?   @default(false)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  employees    Employee[]
-  patients     Patient[]
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  username String @unique
+  name     String @unique
+  email    String @unique
+  contact  Int    @unique
+
+  address           String
+  state             String
+  city              String
+  pincode           Int
+  secondary_contact Int?
+
+  password String
+  verified Boolean? @default(false)
+
+  plan String
+
+  employees Employee[]
+  patients  Patient[]
+
+  settings OrgSetting?
+
+  access_level AccessLevel
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrgSetting {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  notification_preferences Json
+  theme                    Json
+
+  allow_multiple_logins        Boolean @default(false)
+  default_patient_data_privacy Boolean @default(true)
+  report_retention_days        Int     @default(365)
+
+  organisation Organisation @relation(fields: [id], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Employee {
-  id             String      @id @default(auto()) @map("_id") @db.ObjectId
-  username       String      @unique
-  email          String      @unique
-  name           String
-  password       String
-  contactNo      Int
-  position       String
-  organisationId String      @db.ObjectId
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  patient        Patient[]
-  reports        Report[]
-  accessLevel    AccessLevel
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  organisation Organisation @relation(fields: [organisationId], references: [id])
+  username          String     @unique
+  aadhar_number     Int        @unique
+  first_name        String
+  last_name         String
+  date_of_birth     DateTime
+  age               Int
+  gender            Gender
+  blood_group       BloodGroup
+  contact_number    Int        @unique
+  emergency_contact Int
+  email             String     @unique
+  guardian_name     String?
+
+  employment_details    Json
+  qualification_details Json?
+  work_history          Json?
+  shift_details         Json?
+  payroll_and_benefits  Json?
+  settings              Json?
+  access_level          AccessLevel
+
+  password String
+
+  organisationId String @db.ObjectId
+
+  patient     Patient[]
+  reports     Report[]
+  appointment Appointment[]
+
+  organisation      Organisation            @relation(fields: [organisationId], references: [id])
+  medical_history   EmployeeMedicalHistory? @relation("EmployeeMedicalHistory")
+  insurance_details InsuranceDetails[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Patient {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  aadharNumber     Int      @unique
-  email            String   @unique
-  guardianName     String?
-  emergencyContact Int
-  name             String
-  gender           String
-  contact          Int      @unique
-  password         String
-  image            String?
-  addedBy          String   @db.ObjectId
-  organisationId   String   @db.ObjectId
-  verified         Boolean? @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
-  Report           Report[]
+  id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  organisation Organisation @relation(fields: [organisationId], references: [id])
-  employee     Employee     @relation(fields: [addedBy], references: [id])
+  aadhar_number     Int        @unique
+  first_name        String
+  last_name         String
+  date_of_birth     DateTime
+  age               Int
+  gender            Gender
+  blood_group       BloodGroup
+  contact_number    Int        @unique
+  emergency_contact Int
+  email             String     @unique
+  guardian_name     String?
+
+  address    String?
+  state      String?
+  city       String?
+  profile    String?
+  occupation String?
+  habits     String?
+
+  password String
+  settings Json
+  added_by String @db.ObjectId
+
+  verified Boolean? @default(false)
+
+  report            Report[]
+  visits            VisitHistory[]
+  insurance_details InsuranceDetails[]
+  appointment       Appointment[]
+
+  organisation_id String @db.ObjectId
+  organisation    Organisation           @relation(fields: [organisation_id], references: [id])
+  employee        Employee               @relation(fields: [added_by], references: [id])
+  medical_history PatientMedicalHistory? @relation("PatientMedicalHistory")
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model PatientMedicalHistory {
+  id                  String @id @default(auto()) @map("_id") @db.ObjectId
+  patient_id          String @unique @db.ObjectId
+  allergies           Json?
+  chronic_diseases    Json?
+  past_surgeries      Json?
+  ongoing_surgeries   Json?
+  vaccination_records Json?
+  family_history      Json?
+
+  patient Patient @relation("PatientMedicalHistory", fields: [patient_id], references: [id])
+}
+
+model EmployeeMedicalHistory {
+  id                  String  @id @default(auto()) @map("_id") @db.ObjectId
+  employee_id         String  @unique @db.ObjectId
+  allergies           String?
+  chronic_diseases    String?
+  past_surgeries      String?
+  ongoing_surgeries   String?
+  vaccination_records String?
+  family_history      String?
+
+  employee Employee @relation("EmployeeMedicalHistory", fields: [employee_id], references: [id])
+}
+
+model VisitHistory {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  visit_date       DateTime
+  reason_for_visit String
+  doctor_name      String
+  department       String
+  hospital_name    String
+  notes            String?
+  patient_id       String   @db.ObjectId
+
+  prescriptions Prescription[]
+  patient       Patient        @relation(fields: [patient_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model InsuranceDetails {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  policy_number   String   @unique
+  provider        String
+  valid_till      DateTime
+  coverage_amount Int
+  owner_type      String
+  owner_id        String   @db.ObjectId
+
+  patient  Patient?  @relation(fields: [owner_id], references: [id])
+  employee Employee? @relation(fields: [owner_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Medication {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  dose      String
+  frequency String?
+  duration  String?
+  notes     String?
+
+  prescription_id String @db.ObjectId
+
+  prescription Prescription @relation(fields: [prescription_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Prescription {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  prescribed_by     String
+  prescription_date DateTime
+  notes             String?
+  visit_id          String   @db.ObjectId
+
+  medications Medication[]
+  visit       VisitHistory @relation(fields: [visit_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Report {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  patientId   String?  @db.ObjectId
+  patient_id  String?  @db.ObjectId
   image       String?
   description String
-  dataType    String
-  signedBy    String
-  addedBy     String   @db.ObjectId
+  data_type   String
+  signed_by   String
+  added_by    String   @db.ObjectId
   verified    Boolean? @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
-  patient  Patient? @relation(fields: [patientId], references: [id])
-  employee Employee @relation(fields: [addedBy], references: [id])
+  patient  Patient? @relation(fields: [patient_id], references: [id])
+  employee Employee @relation(fields: [added_by], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Appointment {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  appointment_date DateTime
+  reason_for_visit String
+  patient_id       String            @db.ObjectId
+  employee_id      String            @db.ObjectId
+  status           AppointmentStatus
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+
+  patient  Patient  @relation(fields: [patient_id], references: [id])
+  employee Employee @relation(fields: [employee_id], references: [id])
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELED
 }
 
 enum AccessLevel {
+  GOD
+  ADMIN
   READ
   WRITE
   MODIFY
   NONE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum BloodGroup {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
 }

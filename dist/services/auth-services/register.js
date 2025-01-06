@@ -27,21 +27,30 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .join(", ");
             return (0, handle_response_1.sendError)(res, error, 422);
         }
-        const { userName, email, contactNo, secContact, password, orgName, address, pinCode, city, state, planSelected, } = result.data;
-        const hash_password = yield bcrypt_1.default.hash(password, 10);
+        const { username, email, contact, secondary_contact, password, name, address, state, city, pincode, plan, access_level = "ADMIN" } = result.data;
+        const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+        const existingAdmin = yield db_1.prisma.organisation.findFirst({
+            where: {
+                username,
+            },
+        });
+        if (existingAdmin) {
+            return (0, handle_response_1.sendError)(res, "Organisation already registered!!");
+        }
         const newOrganisation = yield db_1.prisma.organisation.create({
             data: {
-                userName,
+                username,
+                name,
                 email,
-                contactNo,
-                secContact,
-                password: hash_password,
-                orgName,
+                contact,
+                secondary_contact,
+                password: hashedPassword,
                 address,
-                pinCode,
-                city,
                 state,
-                planSelected,
+                city,
+                pincode,
+                plan,
+                access_level
             },
         });
         const accessTokenPromise = (0, jwt_helper_1.signAccessToken)(newOrganisation.id);
@@ -56,11 +65,11 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             sameSite: "strict",
         });
         return (0, handle_response_1.sendSuccess)(res, {
-            message: "Organization registered successfully",
             accessToken,
         }, 201);
     }
     catch (error) {
+        console.error(error);
         return (0, handle_response_1.sendError)(res, "Internal server error", 500);
     }
 });

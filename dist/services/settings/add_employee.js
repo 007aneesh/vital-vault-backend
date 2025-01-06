@@ -17,7 +17,6 @@ const db_1 = require("../../utils/db");
 const handle_response_1 = require("../../utils/handle_response");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const employee_validations_1 = require("../../validations/employee_validations");
-const crypto_1 = __importDefault(require("crypto"));
 const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = employee_validations_1.employee_schema.safeParse(req.body);
@@ -27,33 +26,48 @@ const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 .join(", ");
             return (0, handle_response_1.sendError)(res, error, 422);
         }
-        const { username, email, name, contactNo, position, organisationId, accessLevel = "READ", } = result.data;
-        const accessLevelEnum = db_1.AccessLevel[accessLevel];
-        try {
-            const existingEmployee = yield db_1.prisma.employee.findUnique({
-                where: {
-                    username: username,
-                },
-            });
-            if (existingEmployee) {
-                return (0, handle_response_1.sendError)(res, "Employee already exists!", 400);
-            }
+        const { username, aadhar_number, first_name, last_name, date_of_birth, age, gender, blood_group, contact_number, emergency_contact, email, employment_details, access_level = "READ", organisationId, } = result.data;
+        const accessLevelEnum = db_1.AccessLevel[access_level];
+        const bloodGroupEnum = db_1.BloodGroup[blood_group];
+        const fieldsToCheck = [
+            { field: "username", value: username },
+            { field: "aadhar_number", value: Number(aadhar_number) },
+            { field: "contact_number", value: Number(contact_number) },
+            { field: "email", value: email },
+        ];
+        const existingEmployee = yield db_1.prisma.employee.findFirst({
+            where: {
+                OR: fieldsToCheck.map((item) => ({
+                    [item.field]: item.value,
+                })),
+            },
+        });
+        if (existingEmployee) {
+            const existingFields = fieldsToCheck
+                .filter((item) => existingEmployee[item.field] === item.value)
+                .map((item) => item.field);
+            const message = `Unique constraint violation on fields: ${existingFields.join(", ")}`;
+            return (0, handle_response_1.sendError)(res, message, 400);
         }
-        catch (error) {
-            return (0, handle_response_1.sendError)(res, "Internal server error", 500);
-        }
-        const password = crypto_1.default.randomBytes(32).toString("hex");
+        const password = "password"; // crypto.randomBytes(32).toString("hex");
         const hash_password = yield bcrypt_1.default.hash(password, 10);
         yield db_1.prisma.employee.create({
             data: {
                 username,
                 email,
-                name,
-                contactNo,
-                position,
+                first_name,
+                last_name,
+                contact_number: Number(contact_number),
                 organisationId,
-                accessLevel: accessLevelEnum,
+                access_level: accessLevelEnum,
                 password: hash_password,
+                aadhar_number: Number(aadhar_number),
+                date_of_birth: new Date(date_of_birth),
+                age,
+                gender,
+                blood_group: bloodGroupEnum,
+                emergency_contact: Number(emergency_contact),
+                employment_details,
             },
         });
         return (0, handle_response_1.sendSuccess)(res, {

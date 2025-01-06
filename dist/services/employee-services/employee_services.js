@@ -14,34 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../utils/db");
 const bcrypt_1 = __importDefault(require("bcrypt"));
-// Update Organisation details
-const updateOrganisation = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
+const updateDetails = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        return yield db_1.prisma.organisation.update({
+        return yield db_1.prisma.employee.update({
             where: { id },
             data: Object.assign({}, data),
         });
     }
     catch (error) {
-        throw new Error(`Error updating organisation: ${error}`);
+        throw new Error(`Error updating employee details: ${error}`);
     }
 });
-// Delete Organisation
-const deleteOrganisation = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield db_1.prisma.organisation.delete({
-            where: { id },
-        });
-    }
-    catch (error) {
-        throw new Error(`Error deleting organisation: ${error}`);
-    }
-});
-// zChange Organisation Password
 const changePassword = (id, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const hashedPassword = yield bcrypt_1.default.hash(newPassword, 10);
-        return yield db_1.prisma.organisation.update({
+        return yield db_1.prisma.employee.update({
             where: { id },
             data: {
                 password: hashedPassword,
@@ -53,7 +40,6 @@ const changePassword = (id, newPassword) => __awaiter(void 0, void 0, void 0, fu
     }
 });
 exports.default = {
-    updateOrganisation,
-    deleteOrganisation,
+    updateDetails,
     changePassword,
 };

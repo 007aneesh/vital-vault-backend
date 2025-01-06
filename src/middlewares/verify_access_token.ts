@@ -11,20 +11,21 @@ export const verifyAccessToken = async (
 
   const authHeader = req.headers["authorization"];
   const bearerToken = authHeader.split(" ");
+  if (bearerToken.length !== 2) {
+    return sendError(res, "Unauthorized: Malformed token", 401);
+  }
   const token = bearerToken[1];
-  jwt.verify(
-    token,
-    String(process.env.ACCESS_TOKEN_SECRET),
-    (err: any, payload: any) => {
-      if (err) {
-        if (err.name === "JsonWebTokenError") {
-          return sendError(res, "Unauthorised", 401);
-        } else {
-          return sendError(res, err.message, 401);
-        }
-      }
-      req.payload = payload;
-      next();
+  try {
+    const payload = jwt.verify(token, String(process.env.ACCESS_TOKEN_SECRET));
+    req.payload = payload;
+    next();
+  } catch (err: any) {
+    if (err.name === "JsonWebTokenError") {
+      return sendError(res, "Unauthorized: Invalid token", 401);
+    } else if (err.name === "TokenExpiredError") {
+      return sendError(res, "Unauthorized: Token expired", 401);
+    } else {
+      return sendError(res, `Unauthorized: ${err.message}`, 401);
     }
-  );
+  }
 };

@@ -16,10 +16,10 @@ const password_validate_1 = require("../../utils/password_validate");
 const jwt_helper_1 = require("../../utils/jwt_helper");
 const patientLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { aadharNumber, password } = req.body;
+        const { aadhar_number, password } = req.body;
         const existingUser = yield db_1.prisma.patient.findFirst({
             where: {
-                aadharNumber,
+                aadhar_number,
             },
         });
         if (!existingUser) {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma, AccessLevel } from "../../utils/db";
+import { prisma, AccessLevel, BloodGroup } from "../../utils/db";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
 import { employee_schema } from "../../validations/employee_validations";
@@ -18,31 +18,54 @@ export const addEmployee = async (req: Request, res: Response) => {
 
     const {
       username,
+      aadhar_number,
+      first_name,
+      last_name,
+      date_of_birth,
+      age,
+      gender,
+      blood_group,
+      contact_number,
+      emergency_contact,
       email,
-      name,
-      contactNo,
-      position,
+      employment_details,
+      access_level = "READ",
       organisationId,
-      accessLevel = "READ",
     } = result.data;
 
     const accessLevelEnum =
-      AccessLevel[accessLevel as keyof typeof AccessLevel];
+      AccessLevel[access_level as keyof typeof AccessLevel];
+    const bloodGroupEnum = BloodGroup[blood_group as keyof typeof BloodGroup];
 
-    try {
-      const existingEmployee = await prisma.employee.findUnique({
-        where: {
-          username: username,
-        },
-      });
-      if (existingEmployee) {
-        return sendError(res, "Employee already exists!", 400);
-      }
-    } catch (error) {
-      return sendError(res, "Internal server error", 500);
+    const fieldsToCheck = [
+      { field: "username", value: username },
+      { field: "aadhar_number", value: Number(aadhar_number) },
+      { field: "contact_number", value: Number(contact_number) },
+      { field: "email", value: email },
+    ];
+
+    const existingEmployee = await prisma.employee.findFirst({
+      where: {
+        OR: fieldsToCheck.map((item) => ({
+          [item.field]: item.value,
+        })),
+      },
+    });
+
+    if (existingEmployee) {
+      const existingFields = fieldsToCheck
+          .filter(
+            (item) => existingEmployee[(item.field as keyof typeof existingEmployee)] === item.value
+          )
+          .map((item) => item.field); 
+
+      const message = `Unique constraint violation on fields: ${existingFields.join(
+        ", "
+      )}`;
+      return sendError(res, message, 400);
     }
 
-    const password = crypto.randomBytes(32).toString("hex");
+    const password = "password" // crypto.randomBytes(32).toString("hex");
 
     const hash_password = await bcrypt.hash(password, 10);
 
@@ -50,12 +73,19 @@ export const addEmployee = async (req: Request, res: Response) => {
       data: {
         username,
         email,
-        name,
-        contactNo,
-        position,
+        first_name,
+        last_name,
+        contact_number: Number(contact_number),
         organisationId,
-        accessLevel: accessLevelEnum,
+        access_level: accessLevelEnum,
         password: hash_password,
+        aadhar_number: Number(aadhar_number),
+        date_of_birth: new Date(date_of_birth),
+        age,
+        gender,
+        blood_group: bloodGroupEnum,
+        emergency_contact: Number(emergency_contact),
+        employment_details,
       },
     });
 
