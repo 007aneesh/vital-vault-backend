@@ -1,11 +1,11 @@
-import { prisma } from "../../utils/db"; 
+import { prisma } from "../../utils/db";
 import bcrypt from "bcrypt";
 import { Organisation } from "@prisma/client";
 
 // Update Organisation details
 const updateOrganisation = async (
   id: string,
-  data: Partial<Organisation>
+  data: Partial<Organisation>,
 ): Promise<Organisation> => {
   try {
     return await prisma.organisation.update({
@@ -33,7 +33,7 @@ const deleteOrganisation = async (id: string): Promise<void> => {
 // zChange Organisation Password
 const changePassword = async (
   id: string,
-  newPassword: string
+  newPassword: string,
 ): Promise<Organisation> => {
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);

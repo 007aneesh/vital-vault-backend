@@ -27,7 +27,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .join(", ");
             return (0, handle_response_1.sendError)(res, error, 422);
         }
-        const { username, email, contact, secondary_contact, password, name, address, state, city, pincode, plan, access_level = "ADMIN" } = result.data;
+        const { username, email, contact, secondary_contact, password, name, address, state, city, pincode, plan, access_level = "ADMIN", } = result.data;
         const hashedPassword = yield bcrypt_1.default.hash(password, 10);
         const existingAdmin = yield db_1.prisma.organisation.findFirst({
             where: {
@@ -50,7 +50,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 city,
                 pincode,
                 plan,
-                access_level
+                access_level,
             },
         });
         const accessTokenPromise = (0, jwt_helper_1.signAccessToken)(newOrganisation.id);

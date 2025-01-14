@@ -151,12 +151,12 @@ model PatientMedicalHistory {
 model EmployeeMedicalHistory {
   id                  String  @id @default(auto()) @map("_id") @db.ObjectId
   employee_id         String  @unique @db.ObjectId
-  allergies           String?
-  chronic_diseases    String?
-  past_surgeries      String?
-  ongoing_surgeries   String?
-  vaccination_records String?
-  family_history      String?
+  allergies           Json?
+  chronic_diseases    Json?
+  past_surgeries      Json?
+  ongoing_surgeries   Json?
+  vaccination_records Json?
+  family_history      Json?
 
   employee Employee @relation("EmployeeMedicalHistory", fields: [employee_id], references: [id])
 }

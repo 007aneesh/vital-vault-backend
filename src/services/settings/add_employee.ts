@@ -54,18 +54,20 @@ export const addEmployee = async (req: Request, res: Response) => {
 
     if (existingEmployee) {
       const existingFields = fieldsToCheck
-          .filter(
-            (item) => existingEmployee[(item.field as keyof typeof existingEmployee)] === item.value
-          )
-          .map((item) => item.field); 
+        .filter(
+          (item) =>
+            existingEmployee[item.field as keyof typeof existingEmployee] ===
+            item.value,
+        )
+        .map((item) => item.field);
 
       const message = `Unique constraint violation on fields: ${existingFields.join(
-        ", "
+        ", ",
       )}`;
       return sendError(res, message, 400);
     }
 
-    const password = "password" // crypto.randomBytes(32).toString("hex");
+    const password = crypto.randomBytes(32).toString("hex");
 
     const hash_password = await bcrypt.hash(password, 10);
 
@@ -94,9 +96,9 @@ export const addEmployee = async (req: Request, res: Response) => {
       {
         message: "Employee registered successfully",
       },
-      201
+      201,
     );
   } catch (error) {
-    return sendError(res, "Internal server error", 500);
+    return sendError(res, `Internal server error: ${error}`, 500);
   }
 };

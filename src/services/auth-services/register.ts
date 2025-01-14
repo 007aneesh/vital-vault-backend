@@ -28,7 +28,7 @@ export const register = async (req: Request, res: Response) => {
       city,
       pincode,
       plan,
-      access_level = "ADMIN"
+      access_level = "ADMIN",
     } = result.data;
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -56,7 +56,7 @@ export const register = async (req: Request, res: Response) => {
         city,
         pincode,
         plan,
-        access_level
+        access_level,
       },
     });
 
@@ -79,7 +79,7 @@ export const register = async (req: Request, res: Response) => {
       {
         accessToken,
       },
-      201
+      201,
     );
   } catch (error) {
     console.error(error);

@@ -1,13 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import { verifyRefreshToken } from "../../middlewares/verify_refresh_token";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
 
-export const refreshToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const refreshToken = async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
 
   if (!refreshToken) return sendError(res, "Bad Request", 400);
@@ -24,13 +20,13 @@ export const refreshToken = async (
     ]);
 
     res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true, 
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
 
     sendSuccess(res, { accessToken });
   } catch (error) {
-    sendError(res, "Invalid Refresh Token", 403);
+    sendError(res, `Invalid Refresh Token: ${error}`, 403);
   }
 };

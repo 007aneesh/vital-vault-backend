@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const organisation_services_1 = __importDefault(require("../../services/settings/organisation_services"));
+const singleton_class_1 = require("../../utils/singleton_class");
 class OrganisationController {
     updateOrganisation(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -24,7 +25,7 @@ class OrganisationController {
                 res.status(200).json(updatedOrganisation);
             }
             catch (error) {
-                res.status(500).json({ error: "Failed to update organisation" });
+                res.status(500).json({ error, message: "Failed to update organisation" });
             }
         });
     }
@@ -37,7 +38,7 @@ class OrganisationController {
                 res.status(200).json({ message: "Organisation deleted successfully" });
             }
             catch (error) {
-                res.status(500).json({ error: "Failed to delete organisation" });
+                res.status(500).json({ error, message: "Failed to delete organisation" });
             }
         });
     }
@@ -52,13 +53,14 @@ class OrganisationController {
                     res.json({ message: "Password updated successfully" });
                 }
                 else {
-                    res.status(404).json({ error: "Organisation not found" });
+                    res.status(404).json({ message: "Organisation not found" });
                 }
             }
             catch (error) {
-                res.status(500).json({ error: "Failed to update password" });
+                res.status(500).json({ error, message: "Failed to update password" });
             }
         });
     }
 }
-exports.default = new OrganisationController();
+const methods = (0, singleton_class_1.SingletonClass)(OrganisationController);
+exports.default = methods;

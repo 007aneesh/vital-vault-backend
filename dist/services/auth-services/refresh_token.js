@@ -13,7 +13,7 @@ exports.refreshToken = void 0;
 const handle_response_1 = require("../../utils/handle_response");
 const verify_refresh_token_1 = require("../../middlewares/verify_refresh_token");
 const jwt_helper_1 = require("../../utils/jwt_helper");
-const refreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const refreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req.cookies;
     if (!refreshToken)
         return (0, handle_response_1.sendError)(res, "Bad Request", 400);
@@ -33,7 +33,7 @@ const refreshToken = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         (0, handle_response_1.sendSuccess)(res, { accessToken });
     }
     catch (error) {
-        (0, handle_response_1.sendError)(res, "Invalid Refresh Token", 403);
+        (0, handle_response_1.sendError)(res, `Invalid Refresh Token: ${error}`, 403);
     }
 });
 exports.refreshToken = refreshToken;

@@ -1,5 +1,6 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import organisationService from "../../services/settings/organisation_services";
+import { SingletonClass } from "../../utils/singleton_class";
 
 class OrganisationController {
   async updateOrganisation(req: any, res: Response) {
@@ -9,12 +10,12 @@ class OrganisationController {
 
       const updatedOrganisation = await organisationService.updateOrganisation(
         id,
-        data
+        data,
       );
 
       res.status(200).json(updatedOrganisation);
     } catch (error) {
-      res.status(500).json({ error: "Failed to update organisation" });
+      res.status(500).json({ error, message: "Failed to update organisation" });
     }
   }
 
@@ -24,7 +25,7 @@ class OrganisationController {
       await organisationService.deleteOrganisation(id);
       res.status(200).json({ message: "Organisation deleted successfully" });
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete organisation" });
+      res.status(500).json({ error, message: "Failed to delete organisation" });
     }
   }
 
@@ -34,17 +35,18 @@ class OrganisationController {
       const { new_password } = req.body;
       const updated = await organisationService.changePassword(
         id,
-        new_password
+        new_password,
       );
       if (updated) {
         res.json({ message: "Password updated successfully" });
       } else {
-        res.status(404).json({ error: "Organisation not found" });
+        res.status(404).json({ message: "Organisation not found" });
       }
     } catch (error) {
-      res.status(500).json({ error: "Failed to update password" });
+      res.status(500).json({ error, message: "Failed to update password" });
     }
   }
 }
 
-export default new OrganisationController();
+const methods = SingletonClass(OrganisationController);
+export default methods;

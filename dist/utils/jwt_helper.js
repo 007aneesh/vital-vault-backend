@@ -17,7 +17,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const signAccessToken = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         const payload = {
-            id
+            id,
         };
         const secret = String(process.env.ACCESS_TOKEN_SECRET);
         const options = {

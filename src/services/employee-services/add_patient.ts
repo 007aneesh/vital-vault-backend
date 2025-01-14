@@ -46,13 +46,13 @@ export const addPatient = async (req: Request, res: Response) => {
         return sendError(res, "Patient already exists!", 400);
       }
     } catch (error) {
-      return sendError(res, "Internal server error", 500);
+      return sendError(res, `Internal server error: ${error}`, 500);
     }
 
     const genderEnum = Gender[gender as keyof typeof Gender];
     const bloodGroupEnum = BloodGroup[blood_group as keyof typeof BloodGroup];
 
-    const password = "password"; //crypto.randomBytes(32).toString("hex");
+    const password = crypto.randomBytes(32).toString("hex");
 
     const hash_password = await bcrypt.hash(password, 10);
 
@@ -84,12 +84,12 @@ export const addPatient = async (req: Request, res: Response) => {
         {
           message: "Patient registered successfully",
         },
-        201
+        201,
       );
     } catch (error) {
       return sendError(res, `Failed to add patient! ${error}`, 404);
     }
   } catch (error) {
-    return sendError(res, `Internal server error`, 500);
+    return sendError(res, `Internal server error ${error}`, 500);
   }
 };

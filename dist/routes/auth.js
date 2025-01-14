@@ -14,21 +14,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const register_1 = require("../services/auth-services/register");
-const admin_login_1 = require("../services/auth-services/admin_login");
 const refresh_token_1 = require("../services/auth-services/refresh_token");
-const user_login_1 = require("../services/auth-services/user_login");
-const employee_login_1 = require("../services/auth-services/employee_login");
+const auth_1 = require("../controllers/auth");
 const router = express_1.default.Router();
 // registration routes
 router.post("/register", register_1.register);
 // login routes
-router.post("/admin-login-v1", admin_login_1.adminLogin);
-router.post("/user-login-v1", user_login_1.patientLogin);
-router.post("/employee-login-v1", employee_login_1.employeeLogin);
+router.post("/admin-login-v1", auth_1.adminLogin);
+router.post("/user-login-v1", auth_1.patientLogin);
+router.post("/employee-login-v1", auth_1.employeeLogin);
 // refresh token route
 router.post("/refresh-token", refresh_token_1.refreshToken);
 //logout route
-router.delete("/logout", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/logout", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send("logout route");
 }));
 exports.default = router;

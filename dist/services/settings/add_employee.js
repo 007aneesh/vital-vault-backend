@@ -17,6 +17,7 @@ const db_1 = require("../../utils/db");
 const handle_response_1 = require("../../utils/handle_response");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const employee_validations_1 = require("../../validations/employee_validations");
+const crypto_1 = __importDefault(require("crypto"));
 const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = employee_validations_1.employee_schema.safeParse(req.body);
@@ -44,12 +45,13 @@ const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
         if (existingEmployee) {
             const existingFields = fieldsToCheck
-                .filter((item) => existingEmployee[item.field] === item.value)
+                .filter((item) => existingEmployee[item.field] ===
+                item.value)
                 .map((item) => item.field);
             const message = `Unique constraint violation on fields: ${existingFields.join(", ")}`;
             return (0, handle_response_1.sendError)(res, message, 400);
         }
-        const password = "password"; // crypto.randomBytes(32).toString("hex");
+        const password = crypto_1.default.randomBytes(32).toString("hex");
         const hash_password = yield bcrypt_1.default.hash(password, 10);
         yield db_1.prisma.employee.create({
             data: {
@@ -75,7 +77,7 @@ const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }, 201);
     }
     catch (error) {
-        return (0, handle_response_1.sendError)(res, "Internal server error", 500);
+        return (0, handle_response_1.sendError)(res, `Internal server error: ${error}`, 500);
     }
 });
 exports.addEmployee = addEmployee;

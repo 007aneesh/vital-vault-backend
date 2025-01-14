@@ -39,7 +39,25 @@ const changePassword = (id, newPassword) => __awaiter(void 0, void 0, void 0, fu
         throw new Error(`Error changing password: ${error}`);
     }
 });
+const getAllEmployees = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.prisma.employee.findMany({
+        include: {
+            medical_history: true,
+        },
+    });
+});
+// Get employee by ID
+const getEmployeeById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield db_1.prisma.employee.findUnique({
+        where: { id },
+        include: {
+            medical_history: true,
+        },
+    });
+});
 exports.default = {
     updateDetails,
     changePassword,
+    getEmployeeById,
+    getAllEmployees,
 };

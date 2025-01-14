@@ -49,7 +49,7 @@ export const patient_schema = z.object({
       "O_POSITIVE",
       "O_NEGATIVE",
     ],
-    { required_error: "Blood group is required" }
+    { required_error: "Blood group is required" },
   ),
   settings: z.object({}).optional(),
 });

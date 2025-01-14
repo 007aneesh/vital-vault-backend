@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 export const signAccessToken = async (id: any) => {
   return new Promise<any>((resolve, reject) => {
     const payload = {
-      id
+      id,
     };
     const secret = String(process.env.ACCESS_TOKEN_SECRET);
     const options = {

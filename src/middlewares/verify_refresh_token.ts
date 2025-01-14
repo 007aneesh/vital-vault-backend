@@ -11,7 +11,7 @@ export const verifyRefreshToken = async (refreshToken: string) => {
         }
         const userId = (payload as jwt.JwtPayload)?.aud;
         resolve(userId);
-      }
+      },
     );
   });
 };

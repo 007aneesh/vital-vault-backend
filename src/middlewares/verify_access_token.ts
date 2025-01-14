@@ -5,7 +5,7 @@ import { sendError } from "../utils/handle_response";
 export const verifyAccessToken = async (
   req: any,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (!req.headers["authorization"]) return sendError(res, "Unauthorised", 401);
 
