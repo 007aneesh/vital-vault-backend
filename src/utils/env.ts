@@ -1,11 +1,14 @@
 import dotenv from "dotenv";
+import path from "node:path";
 
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const getEnv = (key: string, defaultValue?: string): string => {
   const value = process.env[key] || defaultValue;
 
   if (value === undefined) {
+    console.log(`Missing environment variable for ${key}`);
     throw Error(`Missing String environment variable for ${key}`);
   }
 

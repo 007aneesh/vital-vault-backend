@@ -8,8 +8,11 @@ import { verifyAccessToken } from "./middlewares/verify_access_token";
 
 import routes from "./routes";
 import { PORT } from "./utils/env";
+import dotenv from "dotenv";
 
 const app = express();
+
+dotenv.config();
 
 app.use(
   express.urlencoded({
@@ -37,6 +40,6 @@ app.get("/status", (req: Request, res: Response) => {
 
 app.use("/api", routes);
 
-app.listen(PORT, () => {
+app.listen(PORT || process.env.PORT, () => {
   console.log(`Server started at PORT: ${PORT}`);
 });

@@ -5,10 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RESEND_API_KEY = exports.EMAIL_SENDER = exports.REFRESH_TOKEN_SECRET = exports.ACCESS_TOKEN_SECRET = exports.FRONTEND_ORIGIN = exports.APP_ORIGIN = exports.DATABASE_URL = exports.PORT = exports.NODE_ENV = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
+const node_path_1 = __importDefault(require("node:path"));
 dotenv_1.default.config();
+dotenv_1.default.config({ path: node_path_1.default.resolve(__dirname, "../../.env") });
 const getEnv = (key, defaultValue) => {
     const value = process.env[key] || defaultValue;
     if (value === undefined) {
+        console.log(`Missing environment variable for ${key}`);
         throw Error(`Missing String environment variable for ${key}`);
     }
     return value;

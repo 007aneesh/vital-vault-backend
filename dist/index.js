@@ -9,7 +9,9 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const verify_access_token_1 = require("./middlewares/verify_access_token");
 const routes_1 = __importDefault(require("./routes"));
 const env_1 = require("./utils/env");
+const dotenv_1 = __importDefault(require("dotenv"));
 const app = (0, express_1.default)();
+dotenv_1.default.config();
 app.use(express_1.default.urlencoded({
     extended: true,
 }));
@@ -26,6 +28,6 @@ app.get("/status", (req, res) => {
     res.status(200).send({ message: "Server is Up and Running" });
 });
 app.use("/api", routes_1.default);
-app.listen(env_1.PORT, () => {
+app.listen(env_1.PORT || process.env.PORT, () => {
     console.log(`Server started at PORT: ${env_1.PORT}`);
 });
