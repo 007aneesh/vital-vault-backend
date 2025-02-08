@@ -2,14 +2,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const getEnv = (key: string, defaultValue?: string): string => {
-  const value = process.env[key] || defaultValue;
+const getEnv = (key: string, default_value?: string): string => {
+  const value = process.env[key] || default_value;
 
   if (value === undefined) {
     console.warn(
-      `Missing environment variable for ${key}. Using default value: ${defaultValue}`,
+      `Missing environment variable for ${key}. Using default value: ${default_value}`,
     );
-    return defaultValue || "";
+    return default_value || "";
   }
 
   return String(value);
