@@ -1,4 +1,4 @@
-import AppError from "./appError";
+import AppError from "./AppError";
 import { HttpStatusCode } from "./http";
 import AppErrorCode from "./appErrorCode";
 import assert from "node:assert";
