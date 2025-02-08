@@ -14,9 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMail = void 0;
 const email_service_1 = __importDefault(require("../services/email/email.service"));
-const env_1 = require("./env");
-const getFromEmail = () => env_1.NODE_ENV === "local" ? "onboarding@resend.dev" : env_1.EMAIL_SENDER;
-const getToEmail = (to) => env_1.NODE_ENV === "local" ? "aneeshx000@gmail.com" : to;
+const getFromEmail = () => process.env.NODE_ENV === "local" ? "onboarding@resend.dev" : String(process.env.EMAIL_SENDER);
+const getToEmail = (to) => process.env.NODE_ENV === "local" ? "aneeshx000@gmail.com" : to;
 const sendMail = (_a) => __awaiter(void 0, [_a], void 0, function* ({ to, subject, text, html }) {
     return yield email_service_1.default.emails.send({
         from: getFromEmail(),

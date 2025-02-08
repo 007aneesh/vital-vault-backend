@@ -16,14 +16,13 @@ const verify_access_token_1 = require("../../middlewares/verify_access_token");
 const db_1 = require("../../utils/db");
 const cookies_1 = require("../../utils/cookies");
 const date_1 = require("../../utils/date");
-const env_1 = require("../../utils/env");
 const refreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req === null || req === void 0 ? void 0 : req.cookies;
     if (!refreshToken)
         return (0, handle_response_1.sendError)(res, "Bad Request - Unauthorised", 400);
     try {
         const { payload } = (0, verify_access_token_1.verifyToken)(refreshToken, {
-            secret: env_1.REFRESH_TOKEN_SECRET,
+            secret: process.env.REFRESH_TOKEN_SECRET,
         });
         const session = yield db_1.prisma.session.findFirst({
             where: {

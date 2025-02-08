@@ -1,7 +1,6 @@
 import { NextFunction, Response } from "express";
 import jwt, { VerifyOptions } from "jsonwebtoken";
 import { sendError } from "../utils/handle_response";
-import { ACCESS_TOKEN_SECRET } from "../utils/env";
 
 export const verifyAccessToken = async (
   req: any,
@@ -17,7 +16,7 @@ export const verifyAccessToken = async (
   }
   const token = bearerToken[1];
   try {
-    const payload = jwt.verify(token, ACCESS_TOKEN_SECRET);
+    const payload = jwt.verify(token, String(process.env.ACCESS_TOKEN_SECRET));
     req.payload = payload;
     next();
   } catch (err: any) {
@@ -37,7 +36,8 @@ export const verifyToken = <TPayload extends object = any>(
     secret?: string;
   },
 ) => {
-  const { secret = ACCESS_TOKEN_SECRET, ...verifyOpts } = options || {};
+  const { secret = String(process.env.ACCESS_TOKEN_SECRET), ...verifyOpts } =
+    options || {};
   try {
     const payload = jwt.verify(token, secret, {
       ...verifyOpts,
