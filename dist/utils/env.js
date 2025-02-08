@@ -9,16 +9,16 @@ dotenv_1.default.config();
 const getEnv = (key, defaultValue) => {
     const value = process.env[key] || defaultValue;
     if (value === undefined) {
-        console.log(`Missing environment variable for ${key}`);
-        throw Error(`Missing String environment variable for ${key}`);
+        console.warn(`Missing environment variable for ${key}. Using default value: ${defaultValue}`);
+        return defaultValue || "";
     }
-    return value;
+    return String(value);
 };
 exports.NODE_ENV = getEnv("NODE_ENV", "local");
 exports.PORT = getEnv("PORT", "5000");
-exports.APP_ORIGIN = getEnv("APP_ORIGIN");
-exports.FRONTEND_ORIGIN = getEnv("FRONTEND_ORIGIN");
-exports.ACCESS_TOKEN_SECRET = getEnv("ACCESS_TOKEN_SECRET");
-exports.REFRESH_TOKEN_SECRET = getEnv("REFRESH_TOKEN_SECRET");
-exports.EMAIL_SENDER = getEnv("EMAIL_SENDER");
-exports.RESEND_API_KEY = getEnv("RESEND_API_KEY");
+exports.APP_ORIGIN = getEnv("APP_ORIGIN", "");
+exports.FRONTEND_ORIGIN = getEnv("FRONTEND_ORIGIN", "");
+exports.ACCESS_TOKEN_SECRET = getEnv("ACCESS_TOKEN_SECRET", "");
+exports.REFRESH_TOKEN_SECRET = getEnv("REFRESH_TOKEN_SECRET", "");
+exports.EMAIL_SENDER = getEnv("EMAIL_SENDER", "");
+exports.RESEND_API_KEY = getEnv("RESEND_API_KEY", "");
