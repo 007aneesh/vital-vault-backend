@@ -85,11 +85,17 @@ export const register = async (req: Request, res: Response) => {
     });
 
     if (!result.success) {
-      const error = result.error.issues
-        .map((issue) => issue.message)
-        .join(", ");
+      const error = result.error.issues.reduce(
+        (acc, issue) => {
+          acc[issue.path.join(".")] = issue.message;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
       return sendError(res, error, 422);
     }
+
+    console.log("here");
 
     const {
       username,

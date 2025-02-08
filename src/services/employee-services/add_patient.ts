@@ -10,10 +10,13 @@ export const addPatient = async (req: Request, res: Response) => {
     const result = patient_schema.safeParse(req.body);
 
     if (!result.success) {
-      console.log(result.error.issues);
-      const error = result.error.issues
-        .map((issue) => issue.message)
-        .join(", ");
+      const error = result.error.issues.reduce(
+        (acc, issue) => {
+          acc[issue.path.join(".")] = issue.message;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
       return sendError(res, error, 422);
     }
 

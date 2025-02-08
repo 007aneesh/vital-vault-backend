@@ -72,11 +72,13 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const user_agent = (0, clientInfo_1.default)(req);
         const result = auth_validation_1.registerSchema.safeParse(Object.assign(Object.assign({}, req.body), { userAgent: user_agent }));
         if (!result.success) {
-            const error = result.error.issues
-                .map((issue) => issue.message)
-                .join(", ");
+            const error = result.error.issues.reduce((acc, issue) => {
+                acc[issue.path.join(".")] = issue.message;
+                return acc;
+            }, {});
             return (0, handle_response_1.sendError)(res, error, 422);
         }
+        console.log("here");
         const { username, email, contact, secondary_contact, password, name, address, state, city, pincode, plan, access_level = "ADMIN" /* AccessLevel.ADMIN */, userAgent, } = result.data;
         const hashedPassword = yield bcrypt_1.default.hash(password, 10);
         const existing = yield db_1.prisma.entity_Mapping.findFirst({

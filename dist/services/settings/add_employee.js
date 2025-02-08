@@ -22,9 +22,10 @@ const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     try {
         const result = employee_validations_1.employee_schema.safeParse(req.body);
         if (!result.success) {
-            const error = result.error.issues
-                .map((issue) => issue.message)
-                .join(", ");
+            const error = result.error.issues.reduce((acc, issue) => {
+                acc[issue.path.join(".")] = issue.message;
+                return acc;
+            }, {});
             return (0, handle_response_1.sendError)(res, error, 422);
         }
         const { username, aadhar_number, first_name, last_name, date_of_birth, age, gender, blood_group, contact_number, emergency_contact, email, employment_details, access_level = "READ", organisationId, } = result.data;
