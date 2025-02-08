@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const auth_service_1 = require("../../services/auth-services/auth.service");
 const singleton_class_1 = require("../../utils/singleton_class");
-class LoginController {
-    Login(req, res) {
+const user_service_1 = require("../../services/user-services/user.service");
+class UsersController {
+    getData(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, auth_service_1.login)(req, res);
+            return (0, user_service_1.getMe)(req, res);
         });
     }
 }
-const methods = (0, singleton_class_1.SingletonClass)(LoginController);
+const methods = (0, singleton_class_1.SingletonClass)(UsersController);
 exports.default = methods;

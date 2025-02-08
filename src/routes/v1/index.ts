@@ -10,6 +10,7 @@ import MedicationRoutes from "./medication";
 import PresciptionRoutes from "./prescription";
 import ReportRoutes from "./report";
 import SessionRoutes from "./session";
+import UserRoutes from "./users";
 
 import { sendSuccess } from "../../utils/handle_response";
 
@@ -23,6 +24,7 @@ router.use("/medication", verifyAccessToken, MedicationRoutes);
 router.use("/prescription", verifyAccessToken, PresciptionRoutes);
 router.use("/report", verifyAccessToken, ReportRoutes);
 router.use("/session", verifyAccessToken, SessionRoutes);
+router.use("/user", verifyAccessToken, UserRoutes);
 
 router.get("/status", (req: Request, res: Response) => {
   return sendSuccess(res, { message: "The API route is working fine" });

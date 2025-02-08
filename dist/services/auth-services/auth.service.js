@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.sendPasswordResetEmail = exports.verifyEmail = exports.register = exports.userLogin = exports.login = void 0;
+exports.resetPassword = exports.sendPasswordResetEmail = exports.verifyEmail = exports.register = exports.login = void 0;
 const db_1 = require("../../utils/db");
 const handle_response_1 = require("../../utils/handle_response");
 const password_validate_1 = require("../../utils/password_validate");
@@ -26,32 +26,34 @@ const email_template_1 = require("../../utils/email_template");
 const appAssert_1 = __importDefault(require("../../utils/appAssert"));
 const http_1 = require("../../utils/http");
 const clientInfo_1 = __importDefault(require("../../utils/clientInfo"));
-const login = (req, res, params) => __awaiter(void 0, void 0, void 0, function* () {
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { password } = req.body;
-        const identifierValue = req.body[params.identifier];
         const user_agent = (0, clientInfo_1.default)(req);
-        if (!identifierValue) {
-            return (0, handle_response_1.sendError)(res, `${params.identifier} is required`, 400);
-        }
-        const existingUser = yield db_1.prisma.entity_Mapping.findFirst({
-            where: { [params.identifier]: identifierValue },
+        const is_existing = yield db_1.prisma.entity_Mapping.findFirst({
+            where: { username: req.body.username },
         });
-        if (!existingUser) {
-            return (0, handle_response_1.sendError)(res, params.notRegisteredError);
+        if (!is_existing) {
+            return (0, handle_response_1.sendError)(res, "User not found", 404);
         }
-        if ((existingUser === null || existingUser === void 0 ? void 0 : existingUser.password) &&
-            (yield (0, password_validate_1.isValidPassword)(password, existingUser.password))) {
+        if ((is_existing === null || is_existing === void 0 ? void 0 : is_existing.password) &&
+            (yield (0, password_validate_1.isValidPassword)(password, is_existing.password))) {
             const session = yield db_1.prisma.session.create({
                 data: {
-                    user_id: existingUser.id,
+                    user_id: is_existing.id,
                     user_agent: user_agent,
                     expires_at: (0, date_1.thirtyDaysFromNow)(),
                 },
             });
+            yield db_1.prisma.entity_Mapping.update({
+                where: { id: is_existing.id },
+                data: {
+                    last_login_at: new Date(),
+                },
+            });
             const [accessToken, refreshToken] = yield Promise.all([
-                (0, jwt_helper_1.signAccessToken)(existingUser.id, session.id),
-                (0, jwt_helper_1.signRefreshToken)(existingUser.id, session.id),
+                (0, jwt_helper_1.signAccessToken)(is_existing.ref_id, session.id),
+                (0, jwt_helper_1.signRefreshToken)(is_existing.ref_id, session.id),
             ]);
             (0, cookies_1.setAuthCookies)({ res, accessToken, refreshToken });
             return (0, handle_response_1.sendSuccess)(res, { message: "Login Successful" });
@@ -65,45 +67,6 @@ const login = (req, res, params) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.login = login;
-const userLogin = (req, res, params) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { password } = req.body;
-        const identifierValue = req.body[params.identifier];
-        const user_agent = (0, clientInfo_1.default)(req);
-        if (!identifierValue) {
-            return (0, handle_response_1.sendError)(res, `${params.identifier} is required`, 400);
-        }
-        const existingUser = yield db_1.prisma.patient.findFirst({
-            where: { [params.identifier]: identifierValue },
-        });
-        if (!existingUser) {
-            return (0, handle_response_1.sendError)(res, params.notRegisteredError);
-        }
-        if ((existingUser === null || existingUser === void 0 ? void 0 : existingUser.password) &&
-            (yield (0, password_validate_1.isValidPassword)(password, existingUser.password))) {
-            const session = yield db_1.prisma.session.create({
-                data: {
-                    user_id: existingUser.id,
-                    user_agent: user_agent,
-                    expires_at: (0, date_1.thirtyDaysFromNow)(),
-                },
-            });
-            const [accessToken, refreshToken] = yield Promise.all([
-                (0, jwt_helper_1.signAccessToken)(existingUser.id, session.id),
-                (0, jwt_helper_1.signRefreshToken)(existingUser.id, session.id),
-            ]);
-            (0, cookies_1.setAuthCookies)({ res, accessToken, refreshToken });
-            return (0, handle_response_1.sendSuccess)(res, { message: "Login Successful" });
-        }
-        else {
-            return (0, handle_response_1.sendError)(res, "Invalid Credentials", 401);
-        }
-    }
-    catch (error) {
-        return (0, handle_response_1.sendError)(res, `Internal server error: ${error}`, 500);
-    }
-});
-exports.userLogin = userLogin;
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user_agent = (0, clientInfo_1.default)(req);
