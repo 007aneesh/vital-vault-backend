@@ -18,4 +18,5 @@ export const registerSchema = z.object({
   state: z.string().min(2, "State must be at least 4 characters long"),
   plan: z.string(),
   access_level: z.enum(["GOD", "ADMIN", "READ", "WRITE", "MODIFY"]),
+  userAgent: z.string().optional(),
 });

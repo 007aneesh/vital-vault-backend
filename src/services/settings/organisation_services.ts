@@ -31,14 +31,11 @@ const deleteOrganisation = async (id: string): Promise<void> => {
 };
 
 // zChange Organisation Password
-const changePassword = async (
-  id: string,
-  newPassword: string,
-): Promise<Organisation> => {
+const changePassword = async (id: string, newPassword: string) => {
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    return await prisma.organisation.update({
-      where: { id },
+    return await prisma.entity_Mapping.updateMany({
+      where: { ref_id: id },
       data: {
         password: hashedPassword,
       },

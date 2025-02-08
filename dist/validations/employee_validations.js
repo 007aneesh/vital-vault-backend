@@ -8,21 +8,20 @@ exports.employee_schema = zod_1.z.object({
     first_name: zod_1.z.string().min(1, "First Name cannot be empty"),
     last_name: zod_1.z.string().min(1, "Last Name cannot be empty"),
     contact_number: zod_1.z
-        .string() // Kept as string to accommodate 10-digit format
+        .string()
         .length(10, "Contact number must be exactly 10 digits")
         .regex(/^\d+$/, "Contact number must be numeric"),
-    // password: z.string().min(4, "Password must be at least 4 characters long"),
     organisationId: zod_1.z.string(),
-    access_level: zod_1.z.enum(["READ", "WRITE", "MODIFY", "NONE"]), // Kept as enum for better validation
+    access_level: zod_1.z.enum(["READ", "WRITE", "MODIFY", "NONE"]),
     aadhar_number: zod_1.z
-        .string() // Kept as string to accommodate 12-digit format
+        .string()
         .length(12, "Invalid Aadhar number")
         .regex(/^\d+$/, "Aadhar number must be numeric"),
     date_of_birth: zod_1.z.string().refine((date) => !isNaN(Date.parse(date)), {
         message: "Invalid date format",
     }),
     age: zod_1.z.number().min(0, "Age must be a positive number"),
-    gender: zod_1.z.enum(["MALE", "FEMALE", "OTHER"]), // Kept as enum for better validation
+    gender: zod_1.z.enum(["MALE", "FEMALE", "OTHER"]),
     blood_group: zod_1.z.enum([
         "A_POSITIVE",
         "A_NEGATIVE",
@@ -32,13 +31,12 @@ exports.employee_schema = zod_1.z.object({
         "AB_NEGATIVE",
         "O_POSITIVE",
         "O_NEGATIVE",
-    ]), // Added enum for blood group
+    ]),
     emergency_contact: zod_1.z
-        .string() // Kept as string to accommodate 10-digit format
+        .string()
         .length(10, "Contact number must be exactly 10 digits")
         .regex(/^\d+$/, "Contact number must be numeric"),
     employment_details: zod_1.z.object({
-        // Updated employment_details structure
         employee_code: zod_1.z.string().min(1, "Employee code cannot be empty"),
         department: zod_1.z.enum([
             "cardiology",

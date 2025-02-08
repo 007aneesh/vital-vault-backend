@@ -29,7 +29,7 @@ class VisitHistoryController {
 
   async getAllByPatientId(req: any, res: any) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       const visits = await this.visitHistoryService.getAllByPatientId(id);
 
       if (!visits.length) {
@@ -63,7 +63,7 @@ class VisitHistoryController {
 
   async getByDate(req: any, res: any) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       const { date } = req.query;
       const visits = await this.visitHistoryService.getByDate(
         date as string,

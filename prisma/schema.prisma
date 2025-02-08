@@ -10,10 +10,8 @@ datasource db {
 model Organisation {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  username String @unique
-  name     String @unique
-  email    String @unique
-  contact  Int    @unique
+  name    String
+  contact Int    @unique
 
   address           String
   state             String
@@ -21,8 +19,7 @@ model Organisation {
   pincode           Int
   secondary_contact Int?
 
-  password String
-  verified Boolean? @default(false)
+  metadeta Json?
 
   plan String
 
@@ -33,8 +30,7 @@ model Organisation {
 
   access_level AccessLevel
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("organisation")
 }
 
 model OrgSetting {
@@ -43,20 +39,18 @@ model OrgSetting {
   notification_preferences Json
   theme                    Json
 
-  allow_multiple_logins        Boolean @default(false)
+  allow_multiple_logins        Boolean @default(true)
   default_patient_data_privacy Boolean @default(true)
   report_retention_days        Int     @default(365)
 
   organisation Organisation @relation(fields: [id], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("org_setting")
 }
 
 model Employee {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  username          String     @unique
   aadhar_number     Int        @unique
   first_name        String
   last_name         String
@@ -66,7 +60,6 @@ model Employee {
   blood_group       BloodGroup
   contact_number    Int        @unique
   emergency_contact Int
-  email             String     @unique
   guardian_name     String?
 
   employment_details    Json
@@ -76,8 +69,6 @@ model Employee {
   payroll_and_benefits  Json?
   settings              Json?
   access_level          AccessLevel
-
-  password String
 
   organisationId String @db.ObjectId
 
@@ -89,13 +80,14 @@ model Employee {
   medical_history   EmployeeMedicalHistory? @relation("EmployeeMedicalHistory")
   insurance_details InsuranceDetails[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("employee")
 }
 
 model Patient {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
+  username          String     @unique
+  email             String     @unique
   aadhar_number     Int        @unique
   first_name        String
   last_name         String
@@ -105,7 +97,6 @@ model Patient {
   blood_group       BloodGroup
   contact_number    Int        @unique
   emergency_contact Int
-  email             String     @unique
   guardian_name     String?
 
   address    String?
@@ -116,23 +107,24 @@ model Patient {
   habits     String?
 
   password String
-  settings Json
-  added_by String @db.ObjectId
 
-  verified Boolean? @default(false)
+  settings Json?
+  added_by String @db.ObjectId
 
   report            Report[]
   visits            VisitHistory[]
   insurance_details InsuranceDetails[]
   appointment       Appointment[]
 
-  organisation_id String @db.ObjectId
+  organisation_id String                 @db.ObjectId
   organisation    Organisation           @relation(fields: [organisation_id], references: [id])
   employee        Employee               @relation(fields: [added_by], references: [id])
   medical_history PatientMedicalHistory? @relation("PatientMedicalHistory")
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@map("patient")
 }
 
 model PatientMedicalHistory {
@@ -146,11 +138,13 @@ model PatientMedicalHistory {
   family_history      Json?
 
   patient Patient @relation("PatientMedicalHistory", fields: [patient_id], references: [id])
+
+  @@map("patient_medical_history")
 }
 
 model EmployeeMedicalHistory {
-  id                  String  @id @default(auto()) @map("_id") @db.ObjectId
-  employee_id         String  @unique @db.ObjectId
+  id                  String @id @default(auto()) @map("_id") @db.ObjectId
+  employee_id         String @unique @db.ObjectId
   allergies           Json?
   chronic_diseases    Json?
   past_surgeries      Json?
@@ -159,6 +153,8 @@ model EmployeeMedicalHistory {
   family_history      Json?
 
   employee Employee @relation("EmployeeMedicalHistory", fields: [employee_id], references: [id])
+
+  @@map("employee_medical_history")
 }
 
 model VisitHistory {
@@ -174,8 +170,7 @@ model VisitHistory {
   prescriptions Prescription[]
   patient       Patient        @relation(fields: [patient_id], references: [id])
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  @@map("visit_history")
 }
 
 model InsuranceDetails {
@@ -192,6 +187,8 @@ model InsuranceDetails {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@map("insurance_details")
 }
 
 model Medication {
@@ -208,6 +205,8 @@ model Medication {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@map("medications")
 }
 
 model Prescription {
@@ -222,6 +221,8 @@ model Prescription {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@map("prescriptions")
 }
 
 model Report {
@@ -239,6 +240,8 @@ model Report {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@map("reports")
 }
 
 model Appointment {
@@ -253,6 +256,63 @@ model Appointment {
 
   patient  Patient  @relation(fields: [patient_id], references: [id])
   employee Employee @relation(fields: [employee_id], references: [id])
+
+  @@map("appointments")
+}
+
+model Entity_Mapping {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  ref_id String   @db.ObjectId
+  type   UserType
+
+  username String @unique
+  email    String @unique
+  password String
+
+  is_active     Boolean   @default(true)
+  verified      Boolean?  @default(false)
+  last_login_at DateTime?
+
+  verification_codes VerificationCode[]
+  sessions           Session[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([username, password])
+  @@index([ref_id])
+  @@map("entity_mapping")
+}
+
+model VerificationCode {
+  id         String               @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String               @db.ObjectId
+  type       VerificationCodeType
+  created_at DateTime             @default(now())
+  expires_at DateTime
+
+  user Entity_Mapping @relation(fields: [user_id], references: [id])
+
+  @@map("verification_codes")
+}
+
+model Session {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user_id    String   @db.ObjectId
+  created_at DateTime @default(now())
+  expires_at DateTime
+
+  user_agent Json?
+  user Entity_Mapping @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@map("sessions")
+}
+
+enum UserType {
+  organisation
+  patient
+  employee
 }
 
 enum AppointmentStatus {
@@ -285,4 +345,9 @@ enum BloodGroup {
   AB_NEGATIVE
   O_POSITIVE
   O_NEGATIVE
+}
+
+enum VerificationCodeType {
+  email_verfication
+  password_reset
 }

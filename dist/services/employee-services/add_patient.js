@@ -28,7 +28,7 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .join(", ");
             return (0, handle_response_1.sendError)(res, error, 422);
         }
-        const { aadhar_number, email, guardian_name, emergency_contact, first_name, last_name, gender, contact_number, profile, added_by = "", organisation_id, verified = false, date_of_birth, age, blood_group, settings = {}, } = result.data;
+        const { username, aadhar_number, email, guardian_name, emergency_contact, first_name, last_name, gender, contact_number, profile, added_by = "", organisation_id, date_of_birth, age, blood_group, settings = {}, } = result.data;
         try {
             const existingPatient = yield db_1.prisma.patient.findUnique({
                 where: {
@@ -42,29 +42,27 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         catch (error) {
             return (0, handle_response_1.sendError)(res, `Internal server error: ${error}`, 500);
         }
-        const genderEnum = db_1.Gender[gender];
-        const bloodGroupEnum = db_1.BloodGroup[blood_group];
         const password = crypto_1.default.randomBytes(32).toString("hex");
         const hash_password = yield bcrypt_1.default.hash(password, 10);
         try {
             yield db_1.prisma.patient.create({
                 data: {
+                    username,
                     aadhar_number,
                     email,
                     guardian_name,
                     emergency_contact,
                     first_name,
                     last_name,
-                    gender: genderEnum,
+                    gender,
                     contact_number,
                     password: hash_password,
                     profile,
                     added_by,
                     organisation_id,
-                    verified,
                     date_of_birth: new Date(date_of_birth),
                     age,
-                    blood_group: bloodGroupEnum,
+                    blood_group,
                     settings,
                 },
             });

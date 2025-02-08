@@ -37,7 +37,7 @@ class VisitHistoryController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 const visits = yield this.visitHistoryService.getAllByPatientId(id);
                 if (!visits.length) {
                     return (0, handle_response_1.sendError)(res, "No visit histories found for the given patient ID", 404);
@@ -68,7 +68,7 @@ class VisitHistoryController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 const { date } = req.query;
                 const visits = yield this.visitHistoryService.getByDate(date, id);
                 if (!visits.length) {

@@ -15,14 +15,11 @@ const updateDetails = async (id: string, data: any): Promise<Employee> => {
   }
 };
 
-const changePassword = async (
-  id: string,
-  newPassword: string,
-): Promise<Employee> => {
+const changePassword = async (id: string, newPassword: string) => {
   try {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    return await prisma.employee.update({
-      where: { id },
+    return await prisma.entity_Mapping.updateMany({
+      where: { ref_id: id },
       data: {
         password: hashedPassword,
       },
@@ -40,7 +37,6 @@ const getAllEmployees = async () => {
   });
 };
 
-// Get employee by ID
 const getEmployeeById = async (id: string) => {
   return await prisma.employee.findUnique({
     where: { id },

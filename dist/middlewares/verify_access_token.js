@@ -8,13 +8,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyAccessToken = void 0;
+exports.verifyToken = exports.verifyAccessToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const handle_response_1 = require("../utils/handle_response");
+const env_1 = require("../utils/env");
 const verifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.headers["authorization"])
         return (0, handle_response_1.sendError)(res, "Unauthorised", 401);
@@ -25,7 +37,7 @@ const verifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
     const token = bearerToken[1];
     try {
-        const payload = jsonwebtoken_1.default.verify(token, String(process.env.ACCESS_TOKEN_SECRET));
+        const payload = jsonwebtoken_1.default.verify(token, env_1.ACCESS_TOKEN_SECRET);
         req.payload = payload;
         next();
     }
@@ -42,3 +54,18 @@ const verifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.verifyAccessToken = verifyAccessToken;
+const verifyToken = (token, options) => {
+    const _a = options || {}, { secret = env_1.ACCESS_TOKEN_SECRET } = _a, verifyOpts = __rest(_a, ["secret"]);
+    try {
+        const payload = jsonwebtoken_1.default.verify(token, secret, Object.assign({}, verifyOpts));
+        return {
+            payload,
+        };
+    }
+    catch (error) {
+        return {
+            error: error.message,
+        };
+    }
+};
+exports.verifyToken = verifyToken;

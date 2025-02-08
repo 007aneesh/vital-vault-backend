@@ -20,4 +20,5 @@ exports.registerSchema = zod_1.z.object({
     state: zod_1.z.string().min(2, "State must be at least 4 characters long"),
     plan: zod_1.z.string(),
     access_level: zod_1.z.enum(["GOD", "ADMIN", "READ", "WRITE", "MODIFY"]),
+    userAgent: zod_1.z.string().optional(),
 });

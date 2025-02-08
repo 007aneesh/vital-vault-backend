@@ -8,6 +8,7 @@ export const patient_schema = z.object({
   email: z
     .string({ required_error: "Email is required" })
     .email({ message: "Invalid email address" }),
+  username: z.string(),
   guardian_name: z.string().optional(),
   emergency_contact: z
     .number({ required_error: "Emergency contact number is required" })
@@ -29,7 +30,6 @@ export const patient_schema = z.object({
   profile: z.string().optional(),
   added_by: z.string({ required_error: "Employee name is missing" }),
   organisation_id: z.string({ required_error: "Organisation Id is missing" }),
-  verified: z.boolean().optional(),
   date_of_birth: z
     .string({ required_error: "Date of birth is required" })
     .refine((date) => !isNaN(Date.parse(date)), {

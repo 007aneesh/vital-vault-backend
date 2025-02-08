@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const patient_1 = require("../../controllers/patient");
 const common_1 = require("../../controllers/common");
-const verify_access_token_1 = require("../../middlewares/verify_access_token");
 const router = (0, express_1.Router)();
 // patient routes
 router.get("/all", patient_1.PatientController.getAllPatients);
@@ -17,8 +16,8 @@ router.put("/medical-history/:id", patient_1.PatientMedicalHistoryController.upd
 router.delete("/medical-history/:id", patient_1.PatientMedicalHistoryController.delete);
 // visit history routes
 router.post("/visit/create", common_1.VisitHistoryController.createVisit);
-router.get("/all", verify_access_token_1.verifyAccessToken, common_1.VisitHistoryController.getAllByPatientId);
+router.get("/all", common_1.VisitHistoryController.getAllByPatientId);
 router.get("/:id", common_1.VisitHistoryController.getById);
-router.get("/date", verify_access_token_1.verifyAccessToken, common_1.VisitHistoryController.getByDate);
+router.get("/date", common_1.VisitHistoryController.getByDate);
 router.put("/:id", common_1.VisitHistoryController.update);
 exports.default = router;

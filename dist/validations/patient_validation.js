@@ -10,6 +10,7 @@ exports.patient_schema = zod_1.z.object({
     email: zod_1.z
         .string({ required_error: "Email is required" })
         .email({ message: "Invalid email address" }),
+    username: zod_1.z.string(),
     guardian_name: zod_1.z.string().optional(),
     emergency_contact: zod_1.z
         .number({ required_error: "Emergency contact number is required" })
@@ -31,7 +32,6 @@ exports.patient_schema = zod_1.z.object({
     profile: zod_1.z.string().optional(),
     added_by: zod_1.z.string({ required_error: "Employee name is missing" }),
     organisation_id: zod_1.z.string({ required_error: "Organisation Id is missing" }),
-    verified: zod_1.z.boolean().optional(),
     date_of_birth: zod_1.z
         .string({ required_error: "Date of birth is required" })
         .refine((date) => !isNaN(Date.parse(date)), {

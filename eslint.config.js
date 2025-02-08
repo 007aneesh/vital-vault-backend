@@ -29,6 +29,7 @@ export default [
       "prettier/prettier": "off",
       "@typescript-eslint/no-unused-vars": "error",
       "@typescript-eslint/no-explicit-any": "off",
+      "no-unsafe-optional-chaining": "off",
     },
     ignores: [
       "node_modules",

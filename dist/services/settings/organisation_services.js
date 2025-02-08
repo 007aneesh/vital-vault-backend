@@ -41,8 +41,8 @@ const deleteOrganisation = (id) => __awaiter(void 0, void 0, void 0, function* (
 const changePassword = (id, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const hashedPassword = yield bcrypt_1.default.hash(newPassword, 10);
-        return yield db_1.prisma.organisation.update({
-            where: { id },
+        return yield db_1.prisma.entity_Mapping.updateMany({
+            where: { ref_id: id },
             data: {
                 password: hashedPassword,
             },

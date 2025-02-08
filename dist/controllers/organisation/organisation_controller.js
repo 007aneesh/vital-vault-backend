@@ -19,7 +19,7 @@ class OrganisationController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 const data = req.body;
                 const updatedOrganisation = yield organisation_services_1.default.updateOrganisation(id, data);
                 res.status(200).json(updatedOrganisation);
@@ -33,7 +33,7 @@ class OrganisationController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 yield organisation_services_1.default.deleteOrganisation(id);
                 res.status(200).json({ message: "Organisation deleted successfully" });
             }
@@ -46,7 +46,7 @@ class OrganisationController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 const { new_password } = req.body;
                 const updated = yield organisation_services_1.default.changePassword(id, new_password);
                 if (updated) {

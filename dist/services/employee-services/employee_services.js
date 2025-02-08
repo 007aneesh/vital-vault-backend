@@ -28,8 +28,8 @@ const updateDetails = (id, data) => __awaiter(void 0, void 0, void 0, function* 
 const changePassword = (id, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const hashedPassword = yield bcrypt_1.default.hash(newPassword, 10);
-        return yield db_1.prisma.employee.update({
-            where: { id },
+        return yield db_1.prisma.entity_Mapping.updateMany({
+            where: { ref_id: id },
             data: {
                 password: hashedPassword,
             },
@@ -46,7 +46,6 @@ const getAllEmployees = () => __awaiter(void 0, void 0, void 0, function* () {
         },
     });
 });
-// Get employee by ID
 const getEmployeeById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield db_1.prisma.employee.findUnique({
         where: { id },

@@ -53,16 +53,13 @@ const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         const password = crypto_1.default.randomBytes(32).toString("hex");
         const hash_password = yield bcrypt_1.default.hash(password, 10);
-        yield db_1.prisma.employee.create({
+        const employee = yield db_1.prisma.employee.create({
             data: {
-                username,
-                email,
                 first_name,
                 last_name,
                 contact_number: Number(contact_number),
                 organisationId,
                 access_level: accessLevelEnum,
-                password: hash_password,
                 aadhar_number: Number(aadhar_number),
                 date_of_birth: new Date(date_of_birth),
                 age,
@@ -70,6 +67,15 @@ const addEmployee = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 blood_group: bloodGroupEnum,
                 emergency_contact: Number(emergency_contact),
                 employment_details,
+            },
+        });
+        yield db_1.prisma.entity_Mapping.create({
+            data: {
+                ref_id: employee.id,
+                type: "employee",
+                password: hash_password,
+                email,
+                username,
             },
         });
         return (0, handle_response_1.sendSuccess)(res, {

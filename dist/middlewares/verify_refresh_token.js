@@ -14,9 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyRefreshToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const env_1 = require("../utils/env");
 const verifyRefreshToken = (refreshToken) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
-        jsonwebtoken_1.default.verify(refreshToken, String(process.env.REFRESH_TOKEN_SECRET), (err, payload) => {
+        jsonwebtoken_1.default.verify(refreshToken, env_1.REFRESH_TOKEN_SECRET, (err, payload) => {
             if (err) {
                 return reject(new Error("Unauthorised"));
             }

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BloodGroup, Gender, prisma } from "../../utils/db";
+import { prisma } from "../../utils/db";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
 import { patient_schema } from "../../validations/patient_validation";
@@ -18,6 +18,7 @@ export const addPatient = async (req: Request, res: Response) => {
     }
 
     const {
+      username,
       aadhar_number,
       email,
       guardian_name,
@@ -29,7 +30,6 @@ export const addPatient = async (req: Request, res: Response) => {
       profile,
       added_by = "",
       organisation_id,
-      verified = false,
       date_of_birth,
       age,
       blood_group,
@@ -49,9 +49,6 @@ export const addPatient = async (req: Request, res: Response) => {
       return sendError(res, `Internal server error: ${error}`, 500);
     }
 
-    const genderEnum = Gender[gender as keyof typeof Gender];
-    const bloodGroupEnum = BloodGroup[blood_group as keyof typeof BloodGroup];
-
     const password = crypto.randomBytes(32).toString("hex");
 
     const hash_password = await bcrypt.hash(password, 10);
@@ -59,22 +56,22 @@ export const addPatient = async (req: Request, res: Response) => {
     try {
       await prisma.patient.create({
         data: {
+          username,
           aadhar_number,
           email,
           guardian_name,
           emergency_contact,
           first_name,
           last_name,
-          gender: genderEnum,
+          gender,
           contact_number,
           password: hash_password,
           profile,
           added_by,
           organisation_id,
-          verified,
           date_of_birth: new Date(date_of_birth),
           age,
-          blood_group: bloodGroupEnum,
+          blood_group,
           settings,
         },
       });

@@ -5,7 +5,7 @@ import { SingletonClass } from "../../utils/singleton_class";
 class OrganisationController {
   async updateOrganisation(req: any, res: Response) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       const data = req.body;
 
       const updatedOrganisation = await organisationService.updateOrganisation(
@@ -21,7 +21,7 @@ class OrganisationController {
 
   async deleteOrganisation(req: any, res: Response) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       await organisationService.deleteOrganisation(id);
       res.status(200).json({ message: "Organisation deleted successfully" });
     } catch (error) {
@@ -31,7 +31,7 @@ class OrganisationController {
 
   async changePassword(req: any, res: Response) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       const { new_password } = req.body;
       const updated = await organisationService.changePassword(
         id,

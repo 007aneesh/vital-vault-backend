@@ -11,26 +11,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.refreshToken = void 0;
 const handle_response_1 = require("../../utils/handle_response");
-const verify_refresh_token_1 = require("../../middlewares/verify_refresh_token");
 const jwt_helper_1 = require("../../utils/jwt_helper");
+const verify_access_token_1 = require("../../middlewares/verify_access_token");
+const db_1 = require("../../utils/db");
+const cookies_1 = require("../../utils/cookies");
+const date_1 = require("../../utils/date");
+const env_1 = require("../../utils/env");
 const refreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { refreshToken } = req.cookies;
+    const { refreshToken } = req === null || req === void 0 ? void 0 : req.cookies;
     if (!refreshToken)
-        return (0, handle_response_1.sendError)(res, "Bad Request", 400);
+        return (0, handle_response_1.sendError)(res, "Bad Request - Unauthorised", 400);
     try {
-        const userId = yield (0, verify_refresh_token_1.verifyRefreshToken)(refreshToken);
-        const accessTokenPromise = (0, jwt_helper_1.signAccessToken)(userId);
-        const refreshTokenPromise = (0, jwt_helper_1.signRefreshToken)(userId);
-        const [accessToken, newRefreshToken] = yield Promise.all([
-            accessTokenPromise,
-            refreshTokenPromise,
-        ]);
-        res.cookie("refreshToken", newRefreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
+        const { payload } = (0, verify_access_token_1.verifyToken)(refreshToken, {
+            secret: env_1.REFRESH_TOKEN_SECRET,
         });
-        (0, handle_response_1.sendSuccess)(res, { accessToken });
+        const session = yield db_1.prisma.session.findFirst({
+            where: {
+                id: payload.session_id,
+            },
+        });
+        if (!session) {
+            (0, handle_response_1.sendError)(res, "Session expired", 400);
+        }
+        else {
+            const sessionNeedsRefresh = session.expires_at.getTime() - Date.now() <= date_1.ONE_DAY_MS;
+            if (sessionNeedsRefresh) {
+                yield db_1.prisma.session.update({
+                    where: {
+                        id: session.id,
+                    },
+                    data: {
+                        expires_at: (0, date_1.thirtyDaysFromNow)(),
+                    },
+                });
+            }
+            let newRefreshToken = undefined;
+            if (sessionNeedsRefresh) {
+                newRefreshToken = yield (0, jwt_helper_1.signRefreshToken)(session.user_id, session.id);
+            }
+            const accessToken = yield (0, jwt_helper_1.signAccessToken)(session.user_id, session.id);
+            res.cookie("accessToken", accessToken, (0, cookies_1.getAccessTokenCookieOptions)());
+            if (newRefreshToken)
+                res.cookie("refreshToken", newRefreshToken, (0, cookies_1.getRefreshTokenCookieOptions)());
+            (0, handle_response_1.sendSuccess)(res, "Access token refreshed");
+        }
     }
     catch (error) {
         (0, handle_response_1.sendError)(res, `Invalid Refresh Token: ${error}`, 403);

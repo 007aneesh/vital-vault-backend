@@ -33,7 +33,7 @@ class EmployeeController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 const employee = yield employee_services_1.default.getEmployeeById(id);
                 if (!employee) {
                     return (0, handle_response_1.sendError)(res, "Employee not found", 404);
@@ -49,7 +49,7 @@ class EmployeeController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 const data = req.body;
                 const updatedEmployee = yield employee_services_1.default.updateDetails(id, data);
                 if (!updatedEmployee) {
@@ -70,7 +70,7 @@ class EmployeeController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.id;
+                const id = (_a = req === null || req === void 0 ? void 0 : req.payload) === null || _a === void 0 ? void 0 : _a.user_id;
                 const { new_password } = req.body;
                 const updatedEmployee = yield employee_services_1.default.changePassword(id, new_password);
                 if (!updatedEmployee) {

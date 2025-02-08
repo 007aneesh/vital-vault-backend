@@ -4,7 +4,6 @@ import {
   PatientMedicalHistoryController,
 } from "../../controllers/patient";
 import { VisitHistoryController } from "../../controllers/common";
-import { verifyAccessToken } from "../../middlewares/verify_access_token";
 
 const router = Router();
 
@@ -22,9 +21,9 @@ router.delete("/medical-history/:id", PatientMedicalHistoryController.delete);
 
 // visit history routes
 router.post("/visit/create", VisitHistoryController.createVisit);
-router.get("/all", verifyAccessToken, VisitHistoryController.getAllByPatientId);
+router.get("/all", VisitHistoryController.getAllByPatientId);
 router.get("/:id", VisitHistoryController.getById);
-router.get("/date", verifyAccessToken, VisitHistoryController.getByDate);
+router.get("/date", VisitHistoryController.getByDate);
 router.put("/:id", VisitHistoryController.update);
 
 export default router;

@@ -17,7 +17,7 @@ class EmployeeController {
   // Get employee by ID
   async getEmployeeById(req: any, res: Response) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       const employee = await employeeService.getEmployeeById(id);
 
       if (!employee) {
@@ -31,7 +31,7 @@ class EmployeeController {
   }
   async changeEmployeeDetails(req: any, res: Response) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       const data = req.body;
       const updatedEmployee = await employeeService.updateDetails(id, data);
 
@@ -49,7 +49,7 @@ class EmployeeController {
 
   async changePassword(req: any, res: Response) {
     try {
-      const id = req?.payload?.id;
+      const id = req?.payload?.user_id;
       const { new_password } = req.body;
       const updatedEmployee = await employeeService.changePassword(
         id,

@@ -1,32 +1,27 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const register_1 = require("../../services/auth-services/register");
+const auth_service_1 = require("../../services/auth-services/auth.service");
 const refresh_token_1 = require("../../services/auth-services/refresh_token");
 const auth_1 = require("../../controllers/auth");
+const verify_controller_1 = require("../../controllers/auth/verify.controller");
+const logout_controller_1 = require("../../controllers/auth/logout_controller");
+const verify_access_token_1 = require("../../middlewares/verify_access_token");
 const router = express_1.default.Router();
 // registration routes
-router.post("/register", register_1.register);
+router.post("/register", auth_service_1.register);
 // login routes
-router.post("/admin-login", auth_1.LoginController.adminLogin);
+router.post("/login", auth_1.LoginController.adminLogin);
 router.post("/user-login", auth_1.LoginController.patientLogin);
-router.post("/employee-login", auth_1.LoginController.employeeLogin);
+// router.post("/employee-login", LoginController.employeeLogin);
+router.post("/email/verify/:code", verify_controller_1.verify);
+router.post("/password/forgot", verify_controller_1.sendPasswordResetHandler);
+router.post("/password/reset", verify_controller_1.resetPasswordHandler);
 // refresh token route
-router.post("/refresh-token", refresh_token_1.refreshToken);
+router.post("/refresh", refresh_token_1.refreshToken);
 //logout route
-router.delete("/logout", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send("logout route");
-}));
+router.delete("/logout", verify_access_token_1.verifyAccessToken, logout_controller_1.logoutHandler);
 exports.default = router;

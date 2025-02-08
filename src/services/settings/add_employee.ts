@@ -71,16 +71,13 @@ export const addEmployee = async (req: Request, res: Response) => {
 
     const hash_password = await bcrypt.hash(password, 10);
 
-    await prisma.employee.create({
+    const employee = await prisma.employee.create({
       data: {
-        username,
-        email,
         first_name,
         last_name,
         contact_number: Number(contact_number),
         organisationId,
         access_level: accessLevelEnum,
-        password: hash_password,
         aadhar_number: Number(aadhar_number),
         date_of_birth: new Date(date_of_birth),
         age,
@@ -88,6 +85,16 @@ export const addEmployee = async (req: Request, res: Response) => {
         blood_group: bloodGroupEnum,
         emergency_contact: Number(emergency_contact),
         employment_details,
+      },
+    });
+
+    await prisma.entity_Mapping.create({
+      data: {
+        ref_id: employee.id,
+        type: "employee",
+        password: hash_password,
+        email,
+        username,
       },
     });
 

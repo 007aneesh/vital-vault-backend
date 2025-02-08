@@ -9,33 +9,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const login_1 = require("../../services/auth-services/login");
-const constant_1 = require("../../utils/constant");
+const auth_service_1 = require("../../services/auth-services/auth.service");
 const singleton_class_1 = require("../../utils/singleton_class");
 class LoginController {
     adminLogin(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, login_1.login)(req, res, {
-                model: constant_1.Models.ORGANISATION,
+            return (0, auth_service_1.login)(req, res, {
                 identifier: "username",
-                notRegisteredError: "Organisation not registered!!",
+                notRegisteredError: "Not registered!!",
             });
         });
     }
-    employeeLogin(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return (0, login_1.login)(req, res, {
-                model: constant_1.Models.EMPLOYEE,
-                identifier: "username",
-                notRegisteredError: "Employee not registered with organisation!!",
-            });
-        });
-    }
+    // async employeeLogin(req: Request, res: Response) {
+    //   return login(req, res, {
+    //     identifier: "username",
+    //     notRegisteredError: "Employee not registered with organisation!!",
+    //   });
+    // }
     patientLogin(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, login_1.login)(req, res, {
-                model: constant_1.Models.PATIENT,
-                identifier: "aadhar_number",
+            return (0, auth_service_1.userLogin)(req, res, {
+                identifier: "username",
                 notRegisteredError: "Patient not registered!!",
             });
         });
