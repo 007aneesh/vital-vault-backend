@@ -1,8 +1,6 @@
 import dotenv from "dotenv";
-import path from "node:path";
 
 dotenv.config();
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const getEnv = (key: string, defaultValue?: string): string => {
   const value = process.env[key] || defaultValue;
@@ -17,7 +15,6 @@ const getEnv = (key: string, defaultValue?: string): string => {
 
 export const NODE_ENV = getEnv("NODE_ENV", "local");
 export const PORT = getEnv("PORT", "5000");
-export const DATABASE_URL = getEnv("DATABASE_URL");
 export const APP_ORIGIN = getEnv("APP_ORIGIN");
 export const FRONTEND_ORIGIN = getEnv("FRONTEND_ORIGIN");
 export const ACCESS_TOKEN_SECRET = getEnv("ACCESS_TOKEN_SECRET");
