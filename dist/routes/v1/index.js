@@ -13,6 +13,7 @@ const medication_1 = __importDefault(require("./medication"));
 const prescription_1 = __importDefault(require("./prescription"));
 const report_1 = __importDefault(require("./report"));
 const session_1 = __importDefault(require("./session"));
+const users_1 = __importDefault(require("./users"));
 const handle_response_1 = require("../../utils/handle_response");
 const router = (0, express_1.Router)();
 router.use("/auth", auth_1.default);
@@ -23,6 +24,7 @@ router.use("/medication", verify_access_token_1.verifyAccessToken, medication_1.
 router.use("/prescription", verify_access_token_1.verifyAccessToken, prescription_1.default);
 router.use("/report", verify_access_token_1.verifyAccessToken, report_1.default);
 router.use("/session", verify_access_token_1.verifyAccessToken, session_1.default);
+router.use("/user", verify_access_token_1.verifyAccessToken, users_1.default);
 router.get("/status", (req, res) => {
     return (0, handle_response_1.sendSuccess)(res, { message: "The API route is working fine" });
 });

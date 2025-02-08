@@ -3,7 +3,7 @@ import { prisma } from "../../utils/db";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import { isValidPassword } from "../../utils/password_validate";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt_helper";
-import { LoginParams, ResetPasswordParams } from "../../utils/types";
+import { ResetPasswordParams } from "../../utils/types";
 import {
   fiveMinutesAgo,
   oneHourFromNow,
@@ -27,94 +27,42 @@ import { INTERNAL_SERVER_ERROR } from "../../utils/http";
 import getClientInfo from "../../utils/clientInfo";
 import { Prisma } from "@prisma/client";
 
-export const login = async (
-  req: Request,
-  res: Response,
-  params: LoginParams,
-) => {
+export const login = async (req: Request, res: Response) => {
   try {
     const { password } = req.body;
-    const identifierValue = req.body[params.identifier];
 
     const user_agent = getClientInfo(req);
 
-    if (!identifierValue) {
-      return sendError(res, `${params.identifier} is required`, 400);
-    }
-
-    const existingUser = await prisma.entity_Mapping.findFirst({
-      where: { [params.identifier]: identifierValue },
+    const is_existing = await prisma.entity_Mapping.findFirst({
+      where: { username: req.body.username },
     });
 
-    if (!existingUser) {
-      return sendError(res, params.notRegisteredError);
+    if (!is_existing) {
+      return sendError(res, "User not found", 404);
     }
 
     if (
-      existingUser?.password &&
-      (await isValidPassword(password, existingUser.password))
+      is_existing?.password &&
+      (await isValidPassword(password, is_existing.password))
     ) {
       const session = await prisma.session.create({
         data: {
-          user_id: existingUser.id,
+          user_id: is_existing.id,
           user_agent: user_agent as unknown as Prisma.JsonValue,
           expires_at: thirtyDaysFromNow(),
         },
       });
 
-      const [accessToken, refreshToken] = await Promise.all([
-        signAccessToken(existingUser.id, session.id),
-        signRefreshToken(existingUser.id, session.id),
-      ]);
-
-      setAuthCookies({ res, accessToken, refreshToken });
-
-      return sendSuccess(res, { message: "Login Successful" });
-    } else {
-      return sendError(res, "Invalid Credentials", 401);
-    }
-  } catch (error) {
-    return sendError(res, `Internal server error: ${error}`, 500);
-  }
-};
-
-export const userLogin = async (
-  req: Request,
-  res: Response,
-  params: LoginParams,
-) => {
-  try {
-    const { password } = req.body;
-    const identifierValue = req.body[params.identifier];
-    const user_agent = getClientInfo(req);
-
-    if (!identifierValue) {
-      return sendError(res, `${params.identifier} is required`, 400);
-    }
-
-    const existingUser = await prisma.patient.findFirst({
-      where: { [params.identifier]: identifierValue },
-    });
-
-    if (!existingUser) {
-      return sendError(res, params.notRegisteredError);
-    }
-
-    if (
-      existingUser?.password &&
-      (await isValidPassword(password, existingUser.password))
-    ) {
-      const session = await prisma.session.create({
+      await prisma.entity_Mapping.update({
+        where: { id: is_existing.id },
         data: {
-          user_id: existingUser.id,
-          user_agent: user_agent as unknown as Prisma.JsonValue,
-          expires_at: thirtyDaysFromNow(),
+          last_login_at: new Date(),
         },
       });
 
       const [accessToken, refreshToken] = await Promise.all([
-        signAccessToken(existingUser.id, session.id),
-        signRefreshToken(existingUser.id, session.id),
+        signAccessToken(is_existing.ref_id, session.id),
+        signRefreshToken(is_existing.ref_id, session.id),
       ]);
 
       setAuthCookies({ res, accessToken, refreshToken });

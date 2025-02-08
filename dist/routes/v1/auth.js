@@ -14,9 +14,7 @@ const router = express_1.default.Router();
 // registration routes
 router.post("/register", auth_service_1.register);
 // login routes
-router.post("/login", auth_1.LoginController.adminLogin);
-router.post("/user-login", auth_1.LoginController.patientLogin);
-// router.post("/employee-login", LoginController.employeeLogin);
+router.post("/login", auth_1.LoginController.Login);
 router.post("/email/verify/:code", verify_controller_1.verify);
 router.post("/password/forgot", verify_controller_1.sendPasswordResetHandler);
 router.post("/password/reset", verify_controller_1.resetPasswordHandler);

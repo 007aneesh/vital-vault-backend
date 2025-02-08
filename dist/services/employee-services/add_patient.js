@@ -45,18 +45,15 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const password = crypto_1.default.randomBytes(32).toString("hex");
         const hash_password = yield bcrypt_1.default.hash(password, 10);
         try {
-            yield db_1.prisma.patient.create({
+            const patient = yield db_1.prisma.patient.create({
                 data: {
-                    username,
                     aadhar_number,
-                    email,
                     guardian_name,
                     emergency_contact,
                     first_name,
                     last_name,
                     gender,
                     contact_number,
-                    password: hash_password,
                     profile,
                     added_by,
                     organisation_id,
@@ -64,6 +61,15 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     age,
                     blood_group,
                     settings,
+                },
+            });
+            yield db_1.prisma.entity_Mapping.create({
+                data: {
+                    ref_id: patient.id,
+                    type: "patient",
+                    password: hash_password,
+                    email,
+                    username,
                 },
             });
             return (0, handle_response_1.sendSuccess)(res, {

@@ -30,6 +30,8 @@ model Organisation {
 
   access_level AccessLevel
 
+  entity_mapping Entity_Mapping?
+
   @@map("organisation")
 }
 
@@ -68,6 +70,7 @@ model Employee {
   shift_details         Json?
   payroll_and_benefits  Json?
   settings              Json?
+  metadeta              Json?
   access_level          AccessLevel
 
   organisationId String @db.ObjectId
@@ -80,14 +83,14 @@ model Employee {
   medical_history   EmployeeMedicalHistory? @relation("EmployeeMedicalHistory")
   insurance_details InsuranceDetails[]
 
+  entity_mapping Entity_Mapping?
+
   @@map("employee")
 }
 
 model Patient {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
-  username          String     @unique
-  email             String     @unique
   aadhar_number     Int        @unique
   first_name        String
   last_name         String
@@ -106,9 +109,8 @@ model Patient {
   occupation String?
   habits     String?
 
-  password String
-
   settings Json?
+  metadeta Json?
   added_by String @db.ObjectId
 
   report            Report[]
@@ -121,8 +123,7 @@ model Patient {
   employee        Employee               @relation(fields: [added_by], references: [id])
   medical_history PatientMedicalHistory? @relation("PatientMedicalHistory")
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  entity_mapping Entity_Mapping?
 
   @@map("patient")
 }
@@ -262,7 +263,7 @@ model Appointment {
 
 model Entity_Mapping {
   id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  ref_id String   @db.ObjectId
+  ref_id String   @unique @db.ObjectId
   type   UserType
 
   username String @unique
@@ -273,6 +274,10 @@ model Entity_Mapping {
   verified      Boolean?  @default(false)
   last_login_at DateTime?
 
+  organisation Organisation? @relation(fields: [ref_id], references: [id])
+  employee     Employee?     @relation(fields: [ref_id], references: [id])
+  patient      Patient?      @relation(fields: [ref_id], references: [id])
+
   verification_codes VerificationCode[]
   sessions           Session[]
 
@@ -280,7 +285,6 @@ model Entity_Mapping {
   updated_at DateTime @updatedAt
 
   @@index([username, password])
-  @@index([ref_id])
   @@map("entity_mapping")
 }
 
@@ -303,7 +307,7 @@ model Session {
   expires_at DateTime
 
   user_agent Json?
-  user Entity_Mapping @relation(fields: [user_id], references: [id])
+  user       Entity_Mapping @relation(fields: [user_id], references: [id])
 
   @@index([user_id])
   @@map("sessions")

@@ -54,18 +54,15 @@ export const addPatient = async (req: Request, res: Response) => {
     const hash_password = await bcrypt.hash(password, 10);
 
     try {
-      await prisma.patient.create({
+      const patient = await prisma.patient.create({
         data: {
-          username,
           aadhar_number,
-          email,
           guardian_name,
           emergency_contact,
           first_name,
           last_name,
           gender,
           contact_number,
-          password: hash_password,
           profile,
           added_by,
           organisation_id,
@@ -73,6 +70,16 @@ export const addPatient = async (req: Request, res: Response) => {
           age,
           blood_group,
           settings,
+        },
+      });
+
+      await prisma.entity_Mapping.create({
+        data: {
+          ref_id: patient.id,
+          type: "patient",
+          password: hash_password,
+          email,
+          username,
         },
       });
 
