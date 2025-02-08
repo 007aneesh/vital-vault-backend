@@ -14,14 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.signRefreshToken = exports.signAccessToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const env_1 = require("./env");
 const signAccessToken = (user_id, session_id) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         const payload = {
             user_id,
             session_id,
         };
-        const secret = env_1.ACCESS_TOKEN_SECRET;
+        const secret = String(process.env.ACCESS_TOKEN_SECRET);
         const options = {
             expiresIn: "1h",
             issuer: "vital-vault",
@@ -41,7 +40,7 @@ const signRefreshToken = (user_id, session_id) => __awaiter(void 0, void 0, void
             user_id,
             session_id,
         };
-        const secret = env_1.REFRESH_TOKEN_SECRET;
+        const secret = String(process.env.REFRESH_TOKEN_SECRET);
         const options = {
             expiresIn: "30d",
             issuer: "vital-vault",

@@ -1,9 +1,8 @@
 import { CookieOptions } from "express";
 import { fifteenMinutesFromNow, thirtyDaysFromNow } from "./date";
-import { NODE_ENV } from "./env";
 
 export const REFRESH_PATH = "/api/v1/auth";
-const secure = NODE_ENV === "production";
+const secure = process.env.NODE_ENV === "production";
 
 const defaults: CookieOptions = {
   sameSite: "strict",

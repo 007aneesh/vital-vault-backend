@@ -26,7 +26,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = exports.verifyAccessToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const handle_response_1 = require("../utils/handle_response");
-const env_1 = require("../utils/env");
 const verifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (!req.headers["authorization"])
         return (0, handle_response_1.sendError)(res, "Unauthorised", 401);
@@ -37,7 +36,7 @@ const verifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     }
     const token = bearerToken[1];
     try {
-        const payload = jsonwebtoken_1.default.verify(token, env_1.ACCESS_TOKEN_SECRET);
+        const payload = jsonwebtoken_1.default.verify(token, String(process.env.ACCESS_TOKEN_SECRET));
         req.payload = payload;
         next();
     }
@@ -55,7 +54,7 @@ const verifyAccessToken = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.verifyAccessToken = verifyAccessToken;
 const verifyToken = (token, options) => {
-    const _a = options || {}, { secret = env_1.ACCESS_TOKEN_SECRET } = _a, verifyOpts = __rest(_a, ["secret"]);
+    const _a = options || {}, { secret = String(process.env.ACCESS_TOKEN_SECRET) } = _a, verifyOpts = __rest(_a, ["secret"]);
     try {
         const payload = jsonwebtoken_1.default.verify(token, secret, Object.assign({}, verifyOpts));
         return {

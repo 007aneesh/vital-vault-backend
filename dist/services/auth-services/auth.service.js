@@ -23,7 +23,6 @@ const auth_validation_1 = require("../../validations/auth_validation");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const send_mail_1 = require("../../utils/send_mail");
 const email_template_1 = require("../../utils/email_template");
-const env_1 = require("../../utils/env");
 const appAssert_1 = __importDefault(require("../../utils/appAssert"));
 const http_1 = require("../../utils/http");
 const clientInfo_1 = __importDefault(require("../../utils/clientInfo"));
@@ -155,7 +154,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             },
         });
         console.log("verificationCode", verificationCode);
-        const url = `${env_1.APP_ORIGIN}/api/v1/auth/email/verify/${verificationCode.user_id}`;
+        const url = `${process.env.APP_ORIGIN}/api/v1/auth/email/verify/${verificationCode.user_id}`;
         const { error } = yield (0, send_mail_1.sendMail)(Object.assign({ to: email }, (0, email_template_1.getVerifyEmailTemplate)(url)));
         if (error) {
             return (0, handle_response_1.sendError)(res, "Failed to send verification email", 500);
@@ -205,7 +204,7 @@ const verifyEmail = (req, res, code) => __awaiter(void 0, void 0, void 0, functi
         yield db_1.prisma.verificationCode.delete({
             where: { id: validCode.id },
         });
-        return res.redirect(`${env_1.FRONTEND_ORIGIN}/verify/email/success`);
+        return res.redirect(`${process.env.FRONTEND_ORIGIN}/verify/email/success`);
     }
     catch (error) {
         console.log(error);
@@ -241,7 +240,7 @@ const sendPasswordResetEmail = (req, res, email) => __awaiter(void 0, void 0, vo
                 expires_at: expiresAt,
             },
         });
-        const url = `${env_1.FRONTEND_ORIGIN}/reset-password?code=${verificationCode.id}&exp=${expiresAt.getTime()}`;
+        const url = `${process.env.FRONTEND_ORIGIN}/reset-password?code=${verificationCode.id}&exp=${expiresAt.getTime()}`;
         const { data, error } = yield (0, send_mail_1.sendMail)(Object.assign({ to: user.email }, (0, email_template_1.getPasswordResetTemplate)(url)));
         (0, appAssert_1.default)(data === null || data === void 0 ? void 0 : data.id, http_1.INTERNAL_SERVER_ERROR, `${error === null || error === void 0 ? void 0 : error.name} - ${error === null || error === void 0 ? void 0 : error.message}`);
         return (0, handle_response_1.sendSuccess)(res, {
@@ -283,7 +282,7 @@ const resetPassword = (req, res, payload) => __awaiter(void 0, void 0, void 0, f
         return (0, handle_response_1.sendSuccess)(res, {
             message: "Password reset successful",
             data: {
-                redirect_url: `${env_1.FRONTEND_ORIGIN}/verify/password-reset/success`,
+                redirect_url: `${process.env.FRONTEND_ORIGIN}/verify/password-reset/success`,
             },
         }, 200);
     }

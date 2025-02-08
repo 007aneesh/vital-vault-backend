@@ -8,7 +8,6 @@ import {
   getRefreshTokenCookieOptions,
 } from "../../utils/cookies";
 import { ONE_DAY_MS, thirtyDaysFromNow } from "../../utils/date";
-import { REFRESH_TOKEN_SECRET } from "../../utils/env";
 
 export const refreshToken = async (req: Request, res: Response) => {
   const { refreshToken } = req?.cookies;
@@ -17,7 +16,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
   try {
     const { payload } = verifyToken(refreshToken, {
-      secret: REFRESH_TOKEN_SECRET,
+      secret: process.env.REFRESH_TOKEN_SECRET,
     });
 
     const session = await prisma.session.findFirst({

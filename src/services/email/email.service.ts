@@ -1,7 +1,6 @@
 // resend email service
 import { Resend } from "resend";
-import { RESEND_API_KEY } from "../../utils/env";
 
-const resend = new Resend(RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export default resend;

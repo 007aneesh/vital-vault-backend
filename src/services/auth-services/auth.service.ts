@@ -22,7 +22,6 @@ import {
   getPasswordResetTemplate,
   getVerifyEmailTemplate,
 } from "../../utils/email_template";
-import { APP_ORIGIN, FRONTEND_ORIGIN } from "../../utils/env";
 import appAssert from "../../utils/appAssert";
 import { INTERNAL_SERVER_ERROR } from "../../utils/http";
 import getClientInfo from "../../utils/clientInfo";
@@ -206,7 +205,7 @@ export const register = async (req: Request, res: Response) => {
 
     console.log("verificationCode", verificationCode);
 
-    const url = `${APP_ORIGIN}/api/v1/auth/email/verify/${verificationCode.user_id}`;
+    const url = `${process.env.APP_ORIGIN}/api/v1/auth/email/verify/${verificationCode.user_id}`;
 
     const { error } = await sendMail({
       to: email,
@@ -276,7 +275,7 @@ export const verifyEmail = async (
       where: { id: validCode.id },
     });
 
-    return res.redirect(`${FRONTEND_ORIGIN}/verify/email/success`);
+    return res.redirect(`${process.env.FRONTEND_ORIGIN}/verify/email/success`);
   } catch (error) {
     console.log(error);
     return sendError(res, error, 500);
@@ -325,7 +324,7 @@ export const sendPasswordResetEmail = async (
       },
     });
 
-    const url = `${FRONTEND_ORIGIN}/reset-password?code=${
+    const url = `${process.env.FRONTEND_ORIGIN}/reset-password?code=${
       verificationCode.id
     }&exp=${expiresAt.getTime()}`;
 
@@ -393,7 +392,7 @@ export const resetPassword = async (
       {
         message: "Password reset successful",
         data: {
-          redirect_url: `${FRONTEND_ORIGIN}/verify/password-reset/success`,
+          redirect_url: `${process.env.FRONTEND_ORIGIN}/verify/password-reset/success`,
         },
       },
       200,

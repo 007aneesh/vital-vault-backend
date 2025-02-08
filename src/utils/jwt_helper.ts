@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from "./env";
 
 export const signAccessToken = async (user_id: any, session_id: any) => {
   return new Promise<any>((resolve, reject) => {
@@ -7,7 +6,7 @@ export const signAccessToken = async (user_id: any, session_id: any) => {
       user_id,
       session_id,
     };
-    const secret = ACCESS_TOKEN_SECRET;
+    const secret = String(process.env.ACCESS_TOKEN_SECRET);
     const options = {
       expiresIn: "1h",
       issuer: "vital-vault",
@@ -26,7 +25,7 @@ export const signRefreshToken = async (user_id: any, session_id: any) => {
       user_id,
       session_id,
     };
-    const secret = REFRESH_TOKEN_SECRET;
+    const secret = String(process.env.REFRESH_TOKEN_SECRET);
     const options = {
       expiresIn: "30d",
       issuer: "vital-vault",

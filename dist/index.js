@@ -4,14 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+dotenv_1.default.config();
 const verify_access_token_1 = require("./middlewares/verify_access_token");
 const routes_1 = __importDefault(require("./routes"));
-const env_1 = require("./utils/env");
-const dotenv_1 = __importDefault(require("dotenv"));
 const app = (0, express_1.default)();
-dotenv_1.default.config();
+const PORT = process.env.PORT || 5000;
 app.use(express_1.default.urlencoded({
     extended: true,
 }));
@@ -28,6 +28,6 @@ app.get("/status", (req, res) => {
     res.status(200).send({ message: "Server is Up and Running" });
 });
 app.use("/api", routes_1.default);
-app.listen(env_1.PORT || process.env.PORT, () => {
-    console.log(`Server started at PORT: ${env_1.PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server started at PORT: ${PORT}`);
 });
