@@ -10,14 +10,14 @@ export const addPatient = async (req: Request, res: Response) => {
     const result = patient_schema.safeParse(req.body);
 
     if (!result.success) {
-      const error = result.error.issues.reduce(
-        (acc, issue) => {
-          acc[issue.path.join(".")] = issue.message;
-          return acc;
-        },
-        {} as Record<string, string>,
-      );
-      return sendError(res, error, 422);
+      // const error = result.error.issues.reduce(
+      //   (acc, issue) => {
+      //     acc[issue.path.join(".")] = issue.message;
+      //     return acc;
+      //   },
+      //   {} as Record<string, string>,
+      // );
+      return sendError(res, result.error, 422);
     }
 
     const {
@@ -86,13 +86,7 @@ export const addPatient = async (req: Request, res: Response) => {
         },
       });
 
-      return sendSuccess(
-        res,
-        {
-          message: "Patient registered successfully",
-        },
-        201,
-      );
+      return sendSuccess(res, "Patient registered successfully", 201);
     } catch (error) {
       return sendError(res, `Failed to add patient! ${error}`, 404);
     }

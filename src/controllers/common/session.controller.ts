@@ -25,9 +25,8 @@ export const getSessionsHandler = catchErrors(async (req: any, res: any) => {
     },
   });
 
-  return sendSuccess(res, {
-    message: "Sessions retrieved",
-    data: sessions.map((session) => ({
+  return sendSuccess(res, "Sessions retrieved", 200, {
+    sessions: sessions.map((session) => ({
       ...session,
       is_current_session: session.id === req.payload.session_id,
     })),
@@ -46,5 +45,5 @@ export const deleteSessionHandler = catchErrors(async (req: any, res: any) => {
 
   appAssert(deletedSession.count > 0, NOT_FOUND, "Session not found");
 
-  return sendSuccess(res, { message: "Session removed" });
+  return sendSuccess(res, "Session deleted successfully");
 });

@@ -1,12 +1,27 @@
+import catchErrors from "../utils/catchErrors";
+
 export const SingletonClass = <T extends { new (...args: any[]): object }>(
-  constructor: T,
+  Constructor: T,
 ) => {
   return class {
-    private static instance: InstanceType<T>;
+    private static instance: InstanceType<T> & { [key: string]: any };
     private constructor() {}
 
     static get config(): InstanceType<T> {
-      return (this.instance ??= new constructor() as InstanceType<T>);
+      if (!this.instance) {
+        this.instance = new Constructor() as InstanceType<T>;
+
+        // Wrap all async methods with catchErrors
+        Object.getOwnPropertyNames(Constructor.prototype).forEach((method) => {
+          if (method !== "constructor") {
+            const originalMethod = this.instance[method];
+            if (typeof originalMethod === "function") {
+              (this.instance as any)[method] = catchErrors(originalMethod);
+            }
+          }
+        });
+      }
+      return this.instance;
     }
   };
 };

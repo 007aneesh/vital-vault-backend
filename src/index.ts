@@ -10,6 +10,8 @@ dotenv.config();
 import { verifyAccessToken } from "./middlewares/verify_access_token";
 
 import routes from "./routes";
+import AppError from "./utils/appError";
+import { globalErrorHandler } from "./middlewares/globalErrorMiddleware";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -39,6 +41,12 @@ app.get("/status", (req: Request, res: Response) => {
 });
 
 app.use("/api", routes);
+
+app.all("*", (req, res, next) => {
+  next(new AppError(404, "Can't find ${req.originalUrl} on this server!"));
+});
+
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server started at PORT: ${PORT}`);

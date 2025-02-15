@@ -1,87 +1,78 @@
 import { Request, Response } from "express";
 import PrescriptionService from "../../services/prescription/prescription.services";
-import { sendError, sendSuccess } from "../../utils/handle_response";
+import { sendSuccess } from "../../utils/handle_response";
 import { SingletonClass } from "../../utils/singleton_class";
+import AppError from "../../utils/appError";
 
 class PrescriptionController {
   /**
    * Create a new prescription.
    */
   async createPrescription(req: Request, res: Response) {
-    try {
-      const data = req.body;
-      const prescription = await PrescriptionService.create(data);
-      return sendSuccess(res, prescription, 201);
-    } catch (error: any) {
-      return sendError(res, error.message, 500);
-    }
+    const data = req.body;
+    const prescription = await PrescriptionService.create(data);
+    return sendSuccess(
+      res,
+      "Prescription created successfully",
+      201,
+      prescription,
+    );
   }
 
   /**
    * Get all prescriptions.
    */
   async getAllPrescriptions(req: Request, res: Response) {
-    try {
-      const prescriptions = await PrescriptionService.getAll();
-      return sendSuccess(res, prescriptions);
-    } catch (error: any) {
-      return sendError(res, error.message, 500);
-    }
+    const prescriptions = await PrescriptionService.getAll();
+    return sendSuccess(res, "Fetched all prescriptions", 200, prescriptions);
   }
 
   /**
    * Get a prescription by ID.
    */
   async getPrescriptionById(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const prescription = await PrescriptionService.getById(id);
+    const { id } = req.params;
+    const prescription = await PrescriptionService.getById(id);
 
-      if (!prescription) {
-        return sendError(res, "Prescription not found", 404);
-      }
-
-      return sendSuccess(res, prescription);
-    } catch (error: any) {
-      return sendError(res, error.message, 500);
+    if (!prescription) {
+      throw new AppError(404, "Prescription not found");
     }
+
+    return sendSuccess(res, "Prescription found", 200, prescription);
   }
 
   /**
    * Update a prescription by ID.
    */
   async updatePrescription(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const data = req.body;
-      const updatedPrescription = await PrescriptionService.update(id, data);
+    const { id } = req.params;
+    const data = req.body;
+    const updatedPrescription = await PrescriptionService.update(id, data);
 
-      if (!updatedPrescription) {
-        return sendError(res, "Prescription not found", 404);
-      }
-
-      return sendSuccess(res, updatedPrescription);
-    } catch (error: any) {
-      return sendError(res, error.message, 500);
+    if (!updatedPrescription) {
+      throw new AppError(404, "Prescription not found");
     }
+
+    return sendSuccess(
+      res,
+      "Prescription updated successfully",
+      200,
+      updatedPrescription,
+    );
   }
 
   /**
    * Delete a prescription by ID.
    */
   async deletePrescription(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      const deletedPrescription = await PrescriptionService.delete(id);
+    const { id } = req.params;
+    const deletedPrescription = await PrescriptionService.delete(id);
 
-      if (!deletedPrescription) {
-        return sendError(res, "Prescription not found", 404);
-      }
-
-      return sendSuccess(res, deletedPrescription);
-    } catch (error: any) {
-      return sendError(res, error.message, 500);
+    if (!deletedPrescription) {
+      throw new AppError(404, "Prescription not found");
     }
+
+    return sendSuccess(res, "Prescription deleted successfully", 200);
   }
 }
 

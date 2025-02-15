@@ -9,5 +9,5 @@ export const logoutHandler = async (req: any, res: any) => {
     },
   });
   clearAuthCookies(res);
-  return sendSuccess(res, { message: "Logout successful" });
+  return sendSuccess(res, "Logout successful");
 };

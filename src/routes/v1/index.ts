@@ -11,6 +11,8 @@ import PresciptionRoutes from "./prescription";
 import ReportRoutes from "./report";
 import SessionRoutes from "./session";
 import UserRoutes from "./users";
+import UploadRoutes from "./upload";
+import AppointmentRoutes from "./appointment";
 
 import { sendSuccess } from "../../utils/handle_response";
 
@@ -25,9 +27,11 @@ router.use("/prescription", verifyAccessToken, PresciptionRoutes);
 router.use("/report", verifyAccessToken, ReportRoutes);
 router.use("/session", verifyAccessToken, SessionRoutes);
 router.use("/user", verifyAccessToken, UserRoutes);
+router.use("/upload", verifyAccessToken, UploadRoutes);
+router.use("/appointment", verifyAccessToken, AppointmentRoutes);
 
 router.get("/status", (req: Request, res: Response) => {
-  return sendSuccess(res, { message: "The API route is working fine" });
+  return sendSuccess(res, "The API route is working fine");
 });
 
 export default router;

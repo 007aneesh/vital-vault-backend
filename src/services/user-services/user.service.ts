@@ -38,7 +38,7 @@ export const getMe = async (req: any, res: Response) => {
       ...user_details,
     };
 
-    return sendSuccess(res, response_data, 200);
+    return sendSuccess(res, "User found", 200, response_data);
   } catch (error) {
     console.error("Error while fetching user data:", error);
     return sendError(res, "Internal Server Error", 500);

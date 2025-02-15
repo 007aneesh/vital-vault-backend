@@ -4,3 +4,7 @@
 .env.production
 /node_modules
 .vercel
+.vscode
+/dist
+dist
+dist/*

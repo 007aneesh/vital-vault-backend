@@ -12,8 +12,10 @@ export const signAccessToken = async (user_id: any, session_id: any) => {
       issuer: "vital-vault",
     };
     jwt.sign(payload, secret, options, (err, token) => {
-      console.error("JWT Signing Error:", err);
-      if (err) return reject(new Error("Internal Server Error"));
+      if (err) {
+        console.error("JWT Signing Error:", err);
+        return reject(new Error("Internal Server Error"));
+      }
       resolve(token);
     });
   });
@@ -31,8 +33,10 @@ export const signRefreshToken = async (user_id: any, session_id: any) => {
       issuer: "vital-vault",
     };
     jwt.sign(payload, secret, options, (err, token) => {
-      console.error("JWT Signing Error:", err);
-      if (err) return reject(new Error("Internal Server Error"));
+      if (err) {
+        console.error("JWT Signing Error:", err);
+        return reject(new Error("Internal Server Error"));
+      }
       resolve(token);
     });
   });

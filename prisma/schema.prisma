@@ -7,6 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Entity_Mapping {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  ref_id String   @unique @db.ObjectId
+  type   UserType
+
+  username String @unique
+  email    String @unique
+  password String
+
+  is_active     Boolean   @default(true)
+  verified      Boolean?  @default(false)
+  last_login_at DateTime?
+
+  organisation Organisation? @relation(fields: [ref_id], references: [id])
+  employee     Employee?     @relation(fields: [ref_id], references: [id])
+  patient      Patient?      @relation(fields: [ref_id], references: [id])
+
+  verification_codes VerificationCode[]
+  sessions           Session[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  role       Role?    @relation(fields: [role_id], references: [id])
+  role_id     String?  @db.ObjectId
+
+  @@index([username, password])
+  @@map("entity_mapping")
+}
+
 model Organisation {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
@@ -28,6 +57,8 @@ model Organisation {
 
   settings OrgSetting?
 
+  permissions Permission[]
+
   access_level AccessLevel
 
   entity_mapping Entity_Mapping?
@@ -48,6 +79,33 @@ model OrgSetting {
   organisation Organisation @relation(fields: [id], references: [id])
 
   @@map("org_setting")
+}
+
+model Role {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  name            String           @unique
+  description     String?
+  permissions     Permission[]
+  users           Entity_Mapping[]
+  organisation_id String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@map("role")
+}
+
+model Permission {
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  resource       String // Resource (e.g., "patient_records", "billing_system")
+  action         String // Action (e.g., "create", "read", "update", "delete")
+  scope          String // Scope (e.g., "department:cardiology", "organisation:123")
+  description    String
+  organisation   Organisation? @relation(fields: [organisation_id], references: [id])
+  organisation_id String?       @db.ObjectId
+  role           Role?         @relation(fields: [role_id], references: [id])
+  role_id         String?       @db.ObjectId
+
+  @@map("permission")
 }
 
 model Employee {
@@ -261,33 +319,6 @@ model Appointment {
   @@map("appointments")
 }
 
-model Entity_Mapping {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  ref_id String   @unique @db.ObjectId
-  type   UserType
-
-  username String @unique
-  email    String @unique
-  password String
-
-  is_active     Boolean   @default(true)
-  verified      Boolean?  @default(false)
-  last_login_at DateTime?
-
-  organisation Organisation? @relation(fields: [ref_id], references: [id])
-  employee     Employee?     @relation(fields: [ref_id], references: [id])
-  patient      Patient?      @relation(fields: [ref_id], references: [id])
-
-  verification_codes VerificationCode[]
-  sessions           Session[]
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  @@index([username, password])
-  @@map("entity_mapping")
-}
-
 model VerificationCode {
   id         String               @id @default(auto()) @map("_id") @db.ObjectId
   user_id    String               @db.ObjectId
@@ -320,6 +351,7 @@ enum UserType {
 }
 
 enum AppointmentStatus {
+  PENDING
   SCHEDULED
   COMPLETED
   CANCELED
@@ -354,4 +386,11 @@ enum BloodGroup {
 enum VerificationCodeType {
   email_verfication
   password_reset
+}
+
+enum Action {
+  CREATE
+  READ
+  UPDATE
+  DELETE
 }

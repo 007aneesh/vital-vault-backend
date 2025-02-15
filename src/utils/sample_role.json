@@ -1,0 +1,33 @@
+{
+  "role_id": "63654756765735664htgr545545",
+  "name": "System Administrator",
+  "description": "Full system administrative access with complete control over all system components",
+  "created_at": "2025-02-10T00:00:00Z",
+  "permissions": {
+    "patient_records": {
+      "actions": ["create", "read", "update", "delete", "archive"],
+      "scope": "all",
+      "restrictions": ["audit_logged"]
+    },
+    "billing_system": {
+      "actions": ["create", "read", "update", "delete"],
+      "scope": "all",
+      "restrictions": ["audit_logged"]
+    },
+    "user_management": {
+      "actions": ["create", "read", "update", "delete"],
+      "scope": "all",
+      "restrictions": ["audit_logged"]
+    },
+    "analytics_dashboard": {
+      "actions": ["read", "export"],
+      "scope": "all",
+      "restrictions": ["audit_logged"]
+    },
+    "system_configuration": {
+      "actions": ["read", "update"],
+      "scope": "all",
+      "restrictions": ["audit_logged"]
+    }
+  }
+}
