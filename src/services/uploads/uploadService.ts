@@ -1,10 +1,10 @@
 ﻿import crypto from "crypto";
-import AppErrorCode from "../../utils/appErrorCode.js";
+import AppErrorCode from "../../utils/appErrorCode";
 import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import { Readable } from "stream";
-import appAssert from "../../utils/appAssert.js";
-import { INTERNAL_SERVER_ERROR } from "../../utils/http.js";
-import AppError from "../../utils/appError.js";
+import appAssert from "../../utils/appAssert";
+import { INTERNAL_SERVER_ERROR } from "../../utils/http";
+import AppError from "../../utils/appError";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

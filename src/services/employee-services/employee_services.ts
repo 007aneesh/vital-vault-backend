@@ -33,6 +33,11 @@ const getAllEmployees = async () => {
   return await prisma.employee.findMany({
     include: {
       medical_history: true,
+      roles: {
+        include: {
+          role: true,
+        },
+      },
     },
   });
 };
@@ -42,6 +47,11 @@ const getEmployeeById = async (id: string) => {
     where: { id },
     include: {
       medical_history: true,
+      roles: {
+        include: {
+          role: true,
+        },
+      },
     },
   });
 };

@@ -1,8 +1,8 @@
 ﻿import multer from "multer";
 import sharp from "sharp";
-import AppErrorCode from "../utils/appErrorCode.js";
-import { sendError } from "../utils/handle_response.js";
-import AppError from "../utils/appError.js";
+import AppErrorCode from "../utils/appErrorCode";
+import { sendError } from "../utils/handle_response";
+import AppError from "../utils/appError";
 
 interface options {
   width?: number;

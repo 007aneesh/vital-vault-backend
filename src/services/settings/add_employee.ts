@@ -4,8 +4,9 @@ import { sendError, sendSuccess } from "../../utils/handle_response";
 import bcrypt from "bcrypt";
 import { employee_schema } from "../../validations/employee_validations";
 import crypto from "crypto";
+import catchErrors from "../../utils/catchErrors";
 
-export const addEmployee = async (req: Request, res: Response) => {
+export const addEmployee = catchErrors(async (req: Request, res: Response) => {
   // Validate request body
   const validationResult = employee_schema.safeParse(req.body);
 
@@ -42,10 +43,8 @@ export const addEmployee = async (req: Request, res: Response) => {
   const bloodGroupEnum = BloodGroup[blood_group as keyof typeof BloodGroup];
 
   const fieldsToCheck = [
-    { field: "username", value: username },
     { field: "aadhar_number", value: Number(aadhar_number) },
     { field: "contact_number", value: Number(contact_number) },
-    { field: "email", value: email },
   ];
 
   const existingEmployee = await prisma.employee.findFirst({
@@ -106,4 +105,4 @@ export const addEmployee = async (req: Request, res: Response) => {
   });
 
   return sendSuccess(res, "Employee registered successfully", 201);
-};
+});

@@ -5,6 +5,7 @@ import {
   EmployeeMedicalHistoryController,
 } from "../../controllers/employee";
 import { verifyAccessToken } from "../../middlewares/verify_access_token";
+import { checkPermission } from "../../middlewares/checkPermissions";
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ router.post("/add-patient", verifyAccessToken, addPatient);
 router.patch(
   "/update",
   verifyAccessToken,
+  checkPermission("update", "employee"),
   EmployeeController.changeEmployeeDetails,
 );
 router.post(
@@ -28,5 +30,9 @@ router.post("/medical-history/create", EmployeeMedicalHistoryController.create);
 router.get("/medical-history/:id", EmployeeMedicalHistoryController.getById);
 router.patch("/medical-history/:id", EmployeeMedicalHistoryController.update);
 router.delete("/medical-history/:id", EmployeeMedicalHistoryController.delete);
+router.post("/assign-role", EmployeeController.assignRoleToEmployee);
+
+// Set permissions for a role
+router.post("/set-permissions", EmployeeController.setRolePermissions);
 
 export default router;
