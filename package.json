@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "src/index",
   "scripts": {
-    "start": "nodemon dist/index.js",
+    "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "tsc",
+    "build": "tsc && prisma generate",
     "build:models": "prisma generate",
     "postinstall": "prisma generate",
     "build:ts": "tsc --watch",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "vercel-build": "npm run build"
   },
   "lint-staged": {
     "*.ts": [
