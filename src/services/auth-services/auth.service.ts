@@ -67,7 +67,7 @@ export const login = catchErrors(async (req: Request, res: Response) => {
 
     setAuthCookies({ res, accessToken, refreshToken });
 
-    return sendSuccess(res, "Login Successful", 200);
+    return sendSuccess(res, "Login Successful", 200, accessToken);
   } else {
     return sendError(res, "Invalid Credentials", 401);
   }
