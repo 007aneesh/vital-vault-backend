@@ -57,7 +57,7 @@ export const refreshToken = async (req: Request, res: Response) => {
           getRefreshTokenCookieOptions(),
         );
 
-      sendSuccess(res, "Access token refreshed");
+      sendSuccess(res, "Access token refreshed", 200, accessToken);
     }
   } catch (error) {
     sendError(res, `Invalid Refresh Token: ${error}`, 403);
