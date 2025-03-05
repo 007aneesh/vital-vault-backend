@@ -8,7 +8,7 @@ export const signAccessToken = async (user_id: any, session_id: any) => {
     };
     const secret = String(process.env.ACCESS_TOKEN_SECRET);
     const options = {
-      expiresIn: "1m",
+      expiresIn: "1h",
       issuer: "vital-vault",
     };
     jwt.sign(payload, secret, options, (err, token) => {
