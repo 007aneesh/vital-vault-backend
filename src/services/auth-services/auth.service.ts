@@ -47,7 +47,7 @@ export const login = catchErrors(async (req: Request, res: Response) => {
   ) {
     const session = await prisma.session.create({
       data: {
-        user_id: is_existing.id,
+        user_id: is_existing.ref_id,
         user_agent: user_agent as unknown as Prisma.JsonValue,
         expires_at: thirtyDaysFromNow(),
       },
