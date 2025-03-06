@@ -27,7 +27,7 @@ exports.default = {
     uploadSingleFile(file, category, user) {
         return __awaiter(this, void 0, void 0, function* () {
             const salt = user
-                ? `${crypto_1.default.randomBytes(4).toString("hex")}&id=${user}`
+                ? `${crypto_1.default.randomBytes(4).toString("hex")}_id=${user}`
                 : crypto_1.default.randomBytes(4).toString("hex");
             const filename = this.generateFilename(file.original.originalname, user, salt, file.processed.metadata);
             try {

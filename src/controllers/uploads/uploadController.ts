@@ -4,6 +4,14 @@ import { sendError, sendSuccess } from "../../utils/handle_response";
 import { SingletonClass } from "../../utils/singleton_class";
 
 class UploadController {
+  constructor() {
+    this.handleUpload = this.handleUpload.bind(this);
+    this.uploadOrganization = this.uploadOrganization.bind(this);
+    this.uploadReports = this.uploadReports.bind(this);
+    this.uploadVerifiedDocs = this.uploadVerifiedDocs.bind(this);
+    this.uploadProfileImage = this.uploadProfileImage.bind(this);
+  }
+
   async handleUpload(req: any, res: Response, category: string) {
     if (!req.processedFiles) {
       return sendError(res, "No files provided for upload", 400);
@@ -30,11 +38,11 @@ class UploadController {
   }
 
   uploadVerifiedDocs(req: Request, res: Response) {
-    return this.handleUpload(req, res, "verified-docs");
+    return this.handleUpload(req, res, "verified_docs");
   }
 
   uploadProfileImage(req: any, res: Response) {
-    return this.handleUpload(req, res, "profile-image");
+    return this.handleUpload(req, res, "profile_images");
   }
 }
 

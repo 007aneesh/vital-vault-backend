@@ -16,6 +16,13 @@ const uploadService_1 = __importDefault(require("../../services/uploads/uploadSe
 const handle_response_1 = require("../../utils/handle_response");
 const singleton_class_1 = require("../../utils/singleton_class");
 class UploadController {
+    constructor() {
+        this.handleUpload = this.handleUpload.bind(this);
+        this.uploadOrganization = this.uploadOrganization.bind(this);
+        this.uploadReports = this.uploadReports.bind(this);
+        this.uploadVerifiedDocs = this.uploadVerifiedDocs.bind(this);
+        this.uploadProfileImage = this.uploadProfileImage.bind(this);
+    }
     handleUpload(req, res, category) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
@@ -36,10 +43,10 @@ class UploadController {
         return this.handleUpload(req, res, "reports");
     }
     uploadVerifiedDocs(req, res) {
-        return this.handleUpload(req, res, "verified-docs");
+        return this.handleUpload(req, res, "verified_docs");
     }
     uploadProfileImage(req, res) {
-        return this.handleUpload(req, res, "profile-image");
+        return this.handleUpload(req, res, "profile_images");
     }
 }
 const methods = (0, singleton_class_1.SingletonClass)(UploadController);
