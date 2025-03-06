@@ -14,7 +14,9 @@ cloudinary.config({
 
 export default {
   async uploadSingleFile(file: any, category: string, user?: any) {
-    const salt = crypto.randomBytes(4).toString("hex");
+    const salt = user
+      ? `${crypto.randomBytes(4).toString("hex")}&id=${user}`
+      : crypto.randomBytes(4).toString("hex");
     const filename = this.generateFilename(
       file.original.originalname,
       user,
