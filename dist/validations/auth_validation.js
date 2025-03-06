@@ -6,6 +6,7 @@ exports.registerSchema = zod_1.z.object({
     username: zod_1.z.string().min(6, "Username must be at least 6 characters long"),
     email: zod_1.z.string().email("Invalid email"),
     contact: zod_1.z.number().min(1000000000, "Invalid contact number"),
+    image: zod_1.z.string().optional(),
     secondary_contact: zod_1.z
         .number()
         .min(1000000000, "Invalid contact number")

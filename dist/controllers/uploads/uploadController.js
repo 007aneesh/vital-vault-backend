@@ -38,6 +38,9 @@ class UploadController {
     uploadVerifiedDocs(req, res) {
         return this.handleUpload(req, res, "verified-docs");
     }
+    uploadProfileImage(req, res) {
+        return this.handleUpload(req, res, "profile-image");
+    }
 }
 const methods = (0, singleton_class_1.SingletonClass)(UploadController);
 exports.default = methods;

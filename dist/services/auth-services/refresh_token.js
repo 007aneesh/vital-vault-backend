@@ -52,7 +52,7 @@ const refreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             res.cookie("accessToken", accessToken, (0, cookies_1.getAccessTokenCookieOptions)());
             if (newRefreshToken)
                 res.cookie("refreshToken", newRefreshToken, (0, cookies_1.getRefreshTokenCookieOptions)());
-            (0, handle_response_1.sendSuccess)(res, "Access token refreshed");
+            (0, handle_response_1.sendSuccess)(res, "Access token refreshed", 200, accessToken);
         }
     }
     catch (error) {

@@ -12,6 +12,7 @@ exports.patient_schema = zod_1.z.object({
         .email({ message: "Invalid email address" }),
     username: zod_1.z.string(),
     guardian_name: zod_1.z.string().optional(),
+    image: zod_1.z.string().optional(),
     emergency_contact: zod_1.z
         .number({ required_error: "Emergency contact number is required" })
         .min(1000000000, { message: "Invalid emergency contact number" })

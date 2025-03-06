@@ -32,7 +32,7 @@ exports.addEmployee = (0, catchErrors_1.default)((req, res) => __awaiter(void 0,
         // );
         return (0, handle_response_1.sendError)(res, validationResult.error, 422);
     }
-    const { username, aadhar_number, first_name, last_name, date_of_birth, age, gender, blood_group, contact_number, emergency_contact, email, employment_details, access_level = "READ", organisationId, } = validationResult.data;
+    const { username, aadhar_number, first_name, last_name, date_of_birth, age, gender, blood_group, contact_number, emergency_contact, email, employment_details, access_level = "READ", organisationId, image, } = validationResult.data;
     const accessLevelEnum = db_1.AccessLevel[access_level];
     const bloodGroupEnum = db_1.BloodGroup[blood_group];
     const fieldsToCheck = [
@@ -71,6 +71,7 @@ exports.addEmployee = (0, catchErrors_1.default)((req, res) => __awaiter(void 0,
             blood_group: bloodGroupEnum,
             emergency_contact: Number(emergency_contact),
             employment_details,
+            image,
         },
     });
     // Store login credentials in entity mapping

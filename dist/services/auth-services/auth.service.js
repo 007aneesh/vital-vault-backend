@@ -40,7 +40,7 @@ exports.login = (0, catchErrors_1.default)((req, res) => __awaiter(void 0, void 
         (yield (0, password_validate_1.isValidPassword)(password, is_existing.password))) {
         const session = yield db_1.prisma.session.create({
             data: {
-                user_id: is_existing.id,
+                user_id: is_existing.ref_id,
                 user_agent: user_agent,
                 expires_at: (0, date_1.thirtyDaysFromNow)(),
             },
@@ -56,7 +56,7 @@ exports.login = (0, catchErrors_1.default)((req, res) => __awaiter(void 0, void 
             (0, jwt_helper_1.signRefreshToken)(is_existing.ref_id, session.id),
         ]);
         (0, cookies_1.setAuthCookies)({ res, accessToken, refreshToken });
-        return (0, handle_response_1.sendSuccess)(res, "Login Successful", 200);
+        return (0, handle_response_1.sendSuccess)(res, "Login Successful", 200, accessToken);
     }
     else {
         return (0, handle_response_1.sendError)(res, "Invalid Credentials", 401);
@@ -75,9 +75,9 @@ exports.register = (0, catchErrors_1.default)((req, res) => __awaiter(void 0, vo
         // );
         return (0, handle_response_1.sendError)(res, result.error, 422);
     }
-    const { username, email, contact, secondary_contact, password, name, address, state, city, pincode, plan, access_level = "ADMIN" /* AccessLevel.ADMIN */,
+    const { username, email, contact, secondary_contact, password, name, address, state, city, pincode, plan, access_level = "ADMIN" /* AccessLevel.ADMIN */, 
     // userAgent,
-     } = result.data;
+    image, } = result.data;
     const hashedPassword = yield bcrypt_1.default.hash(password, 10);
     const existing = yield db_1.prisma.entity_Mapping.findFirst({
         where: {
@@ -98,6 +98,7 @@ exports.register = (0, catchErrors_1.default)((req, res) => __awaiter(void 0, vo
             pincode,
             plan,
             access_level,
+            image,
         },
     });
     yield db_1.prisma.entity_Mapping.create({

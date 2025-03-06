@@ -31,7 +31,7 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             // );
             return (0, handle_response_1.sendError)(res, result.error, 422);
         }
-        const { username, aadhar_number, email, guardian_name, emergency_contact, first_name, last_name, gender, contact_number, profile, added_by = "", organisation_id, date_of_birth, age, blood_group, settings = {}, } = result.data;
+        const { username, aadhar_number, email, guardian_name, emergency_contact, first_name, last_name, gender, contact_number, profile, added_by = "", organisation_id, date_of_birth, age, blood_group, settings = {}, image, } = result.data;
         try {
             const existingPatient = yield db_1.prisma.patient.findUnique({
                 where: {
@@ -64,6 +64,7 @@ const addPatient = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                     age,
                     blood_group,
                     settings,
+                    image,
                 },
             });
             yield db_1.prisma.entity_Mapping.create({

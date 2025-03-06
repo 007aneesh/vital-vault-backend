@@ -28,5 +28,11 @@ router.post("/docs", (0, uploadMiddleware_1.default)({
     height: 600,
     fit: "inside",
 }), globalErrorMiddleware_1.globalErrorHandler, uploads_1.uploadController.uploadVerifiedDocs);
+router.post("/profile", (0, uploadMiddleware_1.default)({
+    maxSize: 10 * 1024 * 1024,
+    width: 800,
+    height: 800,
+    fit: "inside",
+}), globalErrorMiddleware_1.globalErrorHandler, uploads_1.uploadController.uploadProfileImage);
 exports.default = router;
 //# sourceMappingURL=upload.js.map

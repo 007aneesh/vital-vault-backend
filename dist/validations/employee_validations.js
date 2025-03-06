@@ -7,6 +7,7 @@ exports.employee_schema = zod_1.z.object({
     email: zod_1.z.string().email("Invalid email address"),
     first_name: zod_1.z.string().min(1, "First Name cannot be empty"),
     last_name: zod_1.z.string().min(1, "Last Name cannot be empty"),
+    image: zod_1.z.string().optional(),
     contact_number: zod_1.z
         .string()
         .length(10, "Contact number must be exactly 10 digits")
