@@ -105,6 +105,7 @@ export const register = catchErrors(async (req: Request, res: Response) => {
     plan,
     access_level = AccessLevel.ADMIN,
     // userAgent,
+    image,
   } = result.data;
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -130,6 +131,7 @@ export const register = catchErrors(async (req: Request, res: Response) => {
       pincode,
       plan,
       access_level,
+      image,
     },
   });
 

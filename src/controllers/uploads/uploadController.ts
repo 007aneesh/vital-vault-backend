@@ -4,11 +4,7 @@ import { sendError, sendSuccess } from "../../utils/handle_response";
 import { SingletonClass } from "../../utils/singleton_class";
 
 class UploadController {
-  async handleUpload(
-    req: Request & { processedFiles?: any; payload?: { user_id: string } },
-    res: Response,
-    category: string,
-  ) {
+  async handleUpload(req: any, res: Response, category: string) {
     if (!req.processedFiles) {
       return sendError(res, "No files provided for upload", 400);
     }
@@ -35,6 +31,10 @@ class UploadController {
 
   uploadVerifiedDocs(req: Request, res: Response) {
     return this.handleUpload(req, res, "verified-docs");
+  }
+
+  uploadProfileImage(req: any, res: Response) {
+    return this.handleUpload(req, res, "profile-image");
   }
 }
 

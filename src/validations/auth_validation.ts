@@ -4,6 +4,7 @@ export const registerSchema = z.object({
   username: z.string().min(6, "Username must be at least 6 characters long"),
   email: z.string().email("Invalid email"),
   contact: z.number().min(1000000000, "Invalid contact number"),
+  image: z.string().optional(),
   secondary_contact: z
     .number()
     .min(1000000000, "Invalid contact number")

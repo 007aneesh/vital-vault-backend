@@ -37,6 +37,7 @@ export const addEmployee = catchErrors(async (req: Request, res: Response) => {
     employment_details,
     access_level = "READ",
     organisationId,
+    image,
   } = validationResult.data;
 
   const accessLevelEnum = AccessLevel[access_level as keyof typeof AccessLevel];
@@ -90,6 +91,7 @@ export const addEmployee = catchErrors(async (req: Request, res: Response) => {
       blood_group: bloodGroupEnum,
       emergency_contact: Number(emergency_contact),
       employment_details,
+      image,
     },
   });
 

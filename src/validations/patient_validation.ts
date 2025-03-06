@@ -10,6 +10,7 @@ export const patient_schema = z.object({
     .email({ message: "Invalid email address" }),
   username: z.string(),
   guardian_name: z.string().optional(),
+  image: z.string().optional(),
   emergency_contact: z
     .number({ required_error: "Emergency contact number is required" })
     .min(1000000000, { message: "Invalid emergency contact number" })

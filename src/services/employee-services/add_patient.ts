@@ -37,6 +37,7 @@ export const addPatient = async (req: Request, res: Response) => {
       age,
       blood_group,
       settings = {},
+      image,
     } = result.data;
 
     try {
@@ -73,6 +74,7 @@ export const addPatient = async (req: Request, res: Response) => {
           age,
           blood_group,
           settings,
+          image,
         },
       });
 

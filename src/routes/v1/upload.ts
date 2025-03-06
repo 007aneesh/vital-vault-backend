@@ -43,4 +43,16 @@ router.post(
   uploadController.uploadVerifiedDocs,
 );
 
+router.post(
+  "/profile",
+  uploadMiddleware({
+    maxSize: 10 * 1024 * 1024,
+    width: 800,
+    height: 800,
+    fit: "inside",
+  }),
+  globalErrorHandler,
+  uploadController.uploadProfileImage,
+);
+
 export default router;

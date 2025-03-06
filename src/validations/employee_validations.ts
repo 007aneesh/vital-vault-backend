@@ -5,6 +5,7 @@ export const employee_schema = z.object({
   email: z.string().email("Invalid email address"),
   first_name: z.string().min(1, "First Name cannot be empty"),
   last_name: z.string().min(1, "Last Name cannot be empty"),
+  image: z.string().optional(),
   contact_number: z
     .string()
     .length(10, "Contact number must be exactly 10 digits")

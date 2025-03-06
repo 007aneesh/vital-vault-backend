@@ -18,6 +18,7 @@ model Organisation {
   city              String
   pincode           Int
   secondary_contact Int?
+  image            String?
 
   metadeta Json?
 
@@ -63,6 +64,7 @@ model Employee {
   contact_number    Int        @unique
   emergency_contact Int
   guardian_name     String?
+  image            String?
 
   employment_details    Json
   qualification_details Json?
@@ -134,6 +136,7 @@ model Patient {
   contact_number    Int        @unique
   emergency_contact Int
   guardian_name     String?
+  image            String?
 
   address    String?
   state      String?
