@@ -14,7 +14,7 @@ router.post("/add-patient", verifyAccessToken, addPatient);
 
 router.patch(
   "/update",
-  verifyAccaessToken,
+  verifyAccessToken,
   checkPermission("update", "employee"),
   EmployeeController.changeEmployeeDetails,
 );
