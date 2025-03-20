@@ -13,6 +13,7 @@ import SessionRoutes from "./session";
 import UserRoutes from "./users";
 import UploadRoutes from "./upload";
 import AppointmentRoutes from "./appointment";
+import AIAudioRoutes from "./audio";
 
 import { sendSuccess } from "../../utils/handle_response";
 
@@ -29,6 +30,7 @@ router.use("/session", verifyAccessToken, SessionRoutes);
 router.use("/user", verifyAccessToken, UserRoutes);
 router.use("/upload", verifyAccessToken, UploadRoutes);
 router.use("/appointment", verifyAccessToken, AppointmentRoutes);
+router.use("/audio", verifyAccessToken, AIAudioRoutes);
 
 router.get("/status", (req: Request, res: Response) => {
   return sendSuccess(res, "The API route is working fine");
