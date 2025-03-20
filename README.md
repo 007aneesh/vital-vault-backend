@@ -2,8 +2,8 @@
 
 🚀 **Check out the frontend implementation as well:**
 
-🌐 **Live Demo:** [Vital Vault Plus]([https://example.com](https://vital-vault-plus.vercel.app/))  
-🛠️ **Frontend Repo:** [GitHub - Vital Vault Plus]([https://github.com/example/vital-vault-plus](https://github.com/007aneesh/vital-vault-plus))
+🌐 **Live Demo:** [Vital Vault Plus](https://vital-vault-plus.vercel.app/)  
+🛠️ **Frontend Repo:** [GitHub - Vital Vault Plus](https://github.com/007aneesh/vital-vault-plus)
 
 ## 📌 Overview
 
