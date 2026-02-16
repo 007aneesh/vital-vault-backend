@@ -1,21 +1,17 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import PatientService from "../../services/patient-services/patient_services";
 import { sendSuccess } from "../../utils/handle_response";
 import { SingletonClass } from "../../utils/singleton_class";
 
 class PatientController {
-  async getSSRMPatients(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { pageSize, sortModel, filterModel } = req.body;
-      const result = await PatientService.getSSRMPatients({
-        pageSize: pageSize || 50,
-        sortModel,
-        filterModel,
-      });
-      return sendSuccess(res, "success", 200, result);
-    } catch (error) {
-      next(error);
-    }
+  async getSSRMPatients(req: Request, res: Response) {
+    const { pageSize, sortModel, filterModel } = req.body;
+    const result = await PatientService.getSSRMPatients({
+      pageSize: pageSize || 50,
+      sortModel,
+      filterModel,
+    });
+    return sendSuccess(res, "success", 200, result);
   }
 
   async getPatientById(req: Request, res: Response) {

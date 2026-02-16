@@ -12,9 +12,9 @@ const globalErrorHandler = (err, req, res, next) => {
     }
     console.log("Global Error Handler", err);
     if (err instanceof appError_1.default) {
-        return (0, handle_response_1.sendError)(res, err.message, err.statusCode);
+        return (0, handle_response_1.sendError)(res, err, err.statusCode);
     }
-    return (0, handle_response_1.sendError)(res, "Something went wrong", 500);
+    return (0, handle_response_1.sendError)(res, err, 500);
 };
 exports.globalErrorHandler = globalErrorHandler;
 //# sourceMappingURL=globalErrorMiddleware.js.map

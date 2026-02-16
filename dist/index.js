@@ -34,5 +34,10 @@ app.all("*", (req, res, next) => {
     next(new appError_1.default(404, "Can't find ${req.originalUrl} on this server!"));
 });
 app.use(globalErrorMiddleware_1.globalErrorHandler);
+if (process.env.NODE_ENV !== "production") {
+    app.listen(process.env.PORT, () => {
+        console.log(`Server is running on port ${process.env.PORT}`);
+    });
+}
 exports.default = app;
 //# sourceMappingURL=index.js.map

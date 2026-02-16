@@ -7,7 +7,9 @@ const express_1 = __importDefault(require("express"));
 const add_employee_1 = require("../../services/settings/add_employee");
 const organisation_1 = require("../../controllers/organisation");
 const common_1 = require("../../controllers/common");
+const dashboard_controller_1 = __importDefault(require("../../controllers/dashboard/dashboard_controller"));
 const router = express_1.default.Router();
+router.get("/dashboard", dashboard_controller_1.default.getDashboardStats);
 // employee registration routes
 router.post("/add-employee", add_employee_1.addEmployee);
 // organisation service routes

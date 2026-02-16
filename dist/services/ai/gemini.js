@@ -12,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.extractMedicationInfo = void 0;
 const generative_ai_1 = require("@google/generative-ai");
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-if (!GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not defined in environment variables");
-}
-const genAI = new generative_ai_1.GoogleGenerativeAI(GEMINI_API_KEY);
 const extractMedicationInfo = (transcriptText) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e;
+    if (!GEMINI_API_KEY) {
+        throw new Error("GEMINI_API_KEY is not defined in environment variables");
+    }
+    const genAI = new generative_ai_1.GoogleGenerativeAI(GEMINI_API_KEY);
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         const prompt = `

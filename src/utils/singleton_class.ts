@@ -16,7 +16,9 @@ export const SingletonClass = <T extends { new (...args: any[]): object }>(
           if (method !== "constructor") {
             const originalMethod = this.instance[method];
             if (typeof originalMethod === "function") {
-              (this.instance as any)[method] = catchErrors(originalMethod);
+              (this.instance as any)[method] = catchErrors(
+                originalMethod.bind(this.instance),
+              );
             }
           }
         });

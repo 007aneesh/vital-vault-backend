@@ -161,8 +161,8 @@ model Patient {
 
   entity_mapping Entity_Mapping?
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
 
   @@map("patient")
 }

@@ -16,7 +16,7 @@ const SingletonClass = (Constructor) => {
                     if (method !== "constructor") {
                         const originalMethod = this.instance[method];
                         if (typeof originalMethod === "function") {
-                            this.instance[method] = (0, catchErrors_1.default)(originalMethod);
+                            this.instance[method] = (0, catchErrors_1.default)(originalMethod.bind(this.instance));
                         }
                     }
                 });

@@ -10,7 +10,7 @@ const createTransporter = () => {
         service: "gmail",
         auth: {
             user: "aneeshx000@gmail.com",
-            pass: "Aneesh ag.",
+            pass: process.env.GOOGLE_APP_PASSWORD,
         },
     });
 };

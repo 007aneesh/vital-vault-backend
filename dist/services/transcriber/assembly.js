@@ -20,15 +20,17 @@ const ASSEMBLYAI_API_KEY = process.env.ASSEMBLYAI_API_KEY;
 const ASSEMBLYAI_BASE_URL = "https://api.assemblyai.com/v2";
 const POLL_INTERVAL = 3000;
 const MAX_RETRIES = 600;
-if (!ASSEMBLYAI_API_KEY) {
-    throw new Error("ASSEMBLYAI_API_KEY is not defined in environment variables");
-}
-const axiosInstance = axios_1.default.create({
-    baseURL: ASSEMBLYAI_BASE_URL,
-    headers: {
-        Authorization: ASSEMBLYAI_API_KEY,
-    },
-});
+const getAxiosInstance = () => {
+    if (!ASSEMBLYAI_API_KEY) {
+        throw new Error("ASSEMBLYAI_API_KEY is not defined in environment variables");
+    }
+    return axios_1.default.create({
+        baseURL: ASSEMBLYAI_BASE_URL,
+        headers: {
+            Authorization: ASSEMBLYAI_API_KEY,
+        },
+    });
+};
 const uploadAudioToAssemblyAI = (filePath) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const fileStream = fs_1.default.createReadStream(filePath);
@@ -47,6 +49,7 @@ const uploadAudioToAssemblyAI = (filePath) => __awaiter(void 0, void 0, void 0, 
 exports.uploadAudioToAssemblyAI = uploadAudioToAssemblyAI;
 const requestTranscription = (audioUrl) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const axiosInstance = getAxiosInstance();
         const response = yield axiosInstance.post("/transcript", {
             audio_url: audioUrl,
         });
@@ -60,7 +63,8 @@ const requestTranscription = (audioUrl) => __awaiter(void 0, void 0, void 0, fun
 exports.requestTranscription = requestTranscription;
 const pollTranscriptionStatus = (transcriptId) => __awaiter(void 0, void 0, void 0, function* () {
     let retries = 0;
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+    const axiosInstance = getAxiosInstance();
+    return new Promise((resolve, reject) => {
         const poll = () => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const response = yield axiosInstance.get(`/transcript/${transcriptId}`);
@@ -86,26 +90,21 @@ const pollTranscriptionStatus = (transcriptId) => __awaiter(void 0, void 0, void
             }
         });
         poll();
-    }));
+    });
 });
 exports.pollTranscriptionStatus = pollTranscriptionStatus;
 const transcribeWithAssemblyAI = (filePath) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    try {
-        const audioUrl = yield (0, exports.uploadAudioToAssemblyAI)(filePath);
-        const transcriptId = yield (0, exports.requestTranscription)(audioUrl);
-        const transcript = yield (0, exports.pollTranscriptionStatus)(transcriptId);
-        return {
-            transcriptText: transcript.text,
-            confidence: transcript.confidence,
-            duration: transcript.duration,
-            wordCount: ((_a = transcript.words) === null || _a === void 0 ? void 0 : _a.length) || 0,
-            fullTranscript: transcript,
-        };
-    }
-    catch (error) {
-        throw error;
-    }
+    const audioUrl = yield (0, exports.uploadAudioToAssemblyAI)(filePath);
+    const transcriptId = yield (0, exports.requestTranscription)(audioUrl);
+    const transcript = yield (0, exports.pollTranscriptionStatus)(transcriptId);
+    return {
+        transcriptText: transcript.text,
+        confidence: transcript.confidence,
+        duration: transcript.duration,
+        wordCount: ((_a = transcript.words) === null || _a === void 0 ? void 0 : _a.length) || 0,
+        fullTranscript: transcript,
+    };
 });
 exports.transcribeWithAssemblyAI = transcribeWithAssemblyAI;
 //# sourceMappingURL=assembly.js.map

@@ -123,7 +123,6 @@ exports.register = (0, catchErrors_1.default)((req, res) => __awaiter(void 0, vo
     }
     catch (error) {
         console.error("Failed to send verification email:", error);
-        return (0, handle_response_1.sendError)(res, "Failed to send verification email", 500);
     }
     // while register as i am gonna send email verification code to user and after that email only he will be allowed to login so creating session and send cookies to user at point is useless
     // const session = await prisma.session.create({

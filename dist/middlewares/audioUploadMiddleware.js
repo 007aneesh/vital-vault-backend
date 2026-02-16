@@ -18,11 +18,16 @@ const fs_1 = __importDefault(require("fs"));
 const appError_1 = __importDefault(require("../utils/appError"));
 const handle_response_1 = require("../utils/handle_response");
 const uploadDir = path_1.default.join(process.cwd(), "uploads");
-if (!fs_1.default.existsSync(uploadDir)) {
-    fs_1.default.mkdirSync(uploadDir, { recursive: true });
-}
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
+        if (!fs_1.default.existsSync(uploadDir)) {
+            try {
+                fs_1.default.mkdirSync(uploadDir, { recursive: true });
+            }
+            catch (err) {
+                return cb(err, "");
+            }
+        }
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
@@ -31,7 +36,12 @@ const storage = multer_1.default.diskStorage({
     },
 });
 const fileFilter = (req, file, cb) => {
-    const allowedMimeTypes = ["audio/mpeg", "audio/mp4", "audio/wav", "audio/webm"];
+    const allowedMimeTypes = [
+        "audio/mpeg",
+        "audio/mp4",
+        "audio/wav",
+        "audio/webm",
+    ];
     if (!allowedMimeTypes.includes(file.mimetype)) {
         return cb(new appError_1.default(400, "Only audio files (mp3, mp4, wav, webm) are allowed!", "Invalid File" /* AppErrorCode.InvalidFile */), false);
     }

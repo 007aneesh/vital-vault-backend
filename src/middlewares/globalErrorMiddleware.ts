@@ -15,8 +15,8 @@ export const globalErrorHandler = (
   console.log("Global Error Handler", err);
 
   if (err instanceof AppError) {
-    return sendError(res, err.message, err.statusCode);
+    return sendError(res, err, err.statusCode);
   }
 
-  return sendError(res, "Something went wrong", 500);
+  return sendError(res, err, 500);
 };
