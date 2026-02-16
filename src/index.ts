@@ -17,18 +17,19 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(
+  cors({
+    origin: process.env.FRONTEND_ORIGIN,
+    credentials: true,
+  }),
+);
+
+app.use(
   express.urlencoded({
     extended: true,
   }),
 );
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: process.env.FRONTEND_ORIGIN,
-    credentials: true,
-  }),
-);
 
 app.use(cookieParser());
 
