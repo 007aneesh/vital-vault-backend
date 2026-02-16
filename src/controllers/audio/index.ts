@@ -1,0 +1,1 @@
+export { transcribeAudioWithAssemblyAI } from "./transcriptionController";
