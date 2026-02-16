@@ -161,7 +161,6 @@ export const register = catchErrors(async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Failed to send verification email:", error);
-    return sendError(res, "Failed to send verification email", 500);
   }
 
   // while register as i am gonna send email verification code to user and after that email only he will be allowed to login so creating session and send cookies to user at point is useless
