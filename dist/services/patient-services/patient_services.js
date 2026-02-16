@@ -11,10 +11,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../utils/db");
 class PatientService {
-    getAllPatients() {
+    buildWhereClause(filterModel) {
+        if (!filterModel)
+            return {};
+        const where = {};
+        for (const [key, value] of Object.entries(filterModel)) {
+            if (value === null || value === undefined || value === "")
+                continue;
+            if (typeof value === "string") {
+                where[key] = { contains: value, mode: "insensitive" };
+            }
+            else if (typeof value === "object" &&
+                "min" in value &&
+                "max" in value) {
+                where[key] = { gte: value.min, lte: value.max };
+            }
+            else if (typeof value === "object" && "min" in value) {
+                where[key] = { gte: value.min };
+            }
+            else if (typeof value === "object" && "max" in value) {
+                where[key] = { lte: value.max };
+            }
+            else {
+                where[key] = value;
+            }
+        }
+        return where;
+    }
+    getSSRMPatients(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const patients = yield db_1.prisma.patient.findMany();
-            return patients;
+            const { pageSize, sortModel, filterModel } = params;
+            const where = this.buildWhereClause(filterModel);
+            const orderBy = sortModel
+                ? { [sortModel.sort_by]: sortModel.type }
+                : undefined;
+            const [data, totalCount] = yield Promise.all([
+                db_1.prisma.patient.findMany({
+                    skip: 0,
+                    take: pageSize,
+                    where,
+                    orderBy,
+                }),
+                db_1.prisma.patient.count({ where }),
+            ]);
+            return { rows: data, totalRows: totalCount };
         });
     }
     getPatientById(id) {

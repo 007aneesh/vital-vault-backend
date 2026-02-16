@@ -15,11 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendMail = void 0;
 const email_service_1 = __importDefault(require("../services/email/email.service"));
 const getFromEmail = () => process.env.NODE_ENV === "local"
-    ? "onboarding@resend.dev"
+    ? "aneeshx000@gmail.com"
     : String(process.env.EMAIL_SENDER);
-const getToEmail = (to) => process.env.NODE_ENV === "local" ? "aneeshx000@gmail.com" : to;
+const getToEmail = (to) => process.env.NODE_ENV === "local" ? "aneesh@wizcommerce.com" : to;
 const sendMail = (_a) => __awaiter(void 0, [_a], void 0, function* ({ to, subject, text, html }) {
-    return yield email_service_1.default.emails.send({
+    return yield email_service_1.default.sendMail({
         from: getFromEmail(),
         to: getToEmail(to),
         subject,

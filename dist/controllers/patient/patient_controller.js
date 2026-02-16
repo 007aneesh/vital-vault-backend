@@ -16,10 +16,15 @@ const patient_services_1 = __importDefault(require("../../services/patient-servi
 const handle_response_1 = require("../../utils/handle_response");
 const singleton_class_1 = require("../../utils/singleton_class");
 class PatientController {
-    getAllPatients(req, res) {
+    getSSRMPatients(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const patients = yield patient_services_1.default.getAllPatients();
-            return (0, handle_response_1.sendSuccess)(res, "success", 200, patients);
+            const { pageSize, sortModel, filterModel } = req.body;
+            const result = yield patient_services_1.default.getSSRMPatients({
+                pageSize: pageSize || 50,
+                sortModel,
+                filterModel,
+            });
+            return (0, handle_response_1.sendSuccess)(res, "success", 200, result);
         });
     }
     getPatientById(req, res) {

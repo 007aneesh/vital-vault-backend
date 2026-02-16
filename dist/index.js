@@ -13,15 +13,15 @@ const routes_1 = __importDefault(require("./routes"));
 const appError_1 = __importDefault(require("./utils/appError"));
 const globalErrorMiddleware_1 = require("./middlewares/globalErrorMiddleware");
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
+app.use((0, cors_1.default)({
+    origin: process.env.FRONTEND_ORIGIN,
+    credentials: true,
+}));
 app.use(express_1.default.urlencoded({
     extended: true,
 }));
 app.use(express_1.default.json());
-app.use((0, cors_1.default)({
-    origin: ["http://localhost:3000"],
-    credentials: true,
-}));
 app.use((0, cookie_parser_1.default)());
 app.get("/", verify_access_token_1.verifyAccessToken, (req, res) => {
     res.send({ message: "Server is Up and Running" });
@@ -34,7 +34,5 @@ app.all("*", (req, res, next) => {
     next(new appError_1.default(404, "Can't find ${req.originalUrl} on this server!"));
 });
 app.use(globalErrorMiddleware_1.globalErrorHandler);
-app.listen(PORT, () => {
-    console.log(`Server started at PORT: ${PORT}`);
-});
+exports.default = app;
 //# sourceMappingURL=index.js.map

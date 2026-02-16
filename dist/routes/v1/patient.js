@@ -5,7 +5,7 @@ const patient_1 = require("../../controllers/patient");
 const common_1 = require("../../controllers/common");
 const router = (0, express_1.Router)();
 // patient routes
-router.get("/all", patient_1.PatientController.getAllPatients);
+router.post("/ssrm", patient_1.PatientController.getSSRMPatients);
 router.get("/:id", patient_1.PatientController.getPatientById);
 router.put("/:id", patient_1.PatientController.updatePatient);
 router.delete("/:id", patient_1.PatientController.deletePatient);

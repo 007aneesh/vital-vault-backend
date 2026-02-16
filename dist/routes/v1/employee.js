@@ -13,7 +13,7 @@ const router = express_1.default.Router();
 router.post("/add-patient", verify_access_token_1.verifyAccessToken, add_patient_1.addPatient);
 router.patch("/update", verify_access_token_1.verifyAccessToken, (0, checkPermissions_1.checkPermission)("update", "employee"), employee_1.EmployeeController.changeEmployeeDetails);
 router.post("/change-password", verify_access_token_1.verifyAccessToken, employee_1.EmployeeController.changePassword);
-router.get("/all", verify_access_token_1.verifyAccessToken, employee_1.EmployeeController.getAllEmployees);
+router.post("/ssrm", verify_access_token_1.verifyAccessToken, employee_1.EmployeeController.getSSRMEmployees);
 router.get("/:id", verify_access_token_1.verifyAccessToken, employee_1.EmployeeController.getEmployeeById);
 router.post("/medical-history/create", employee_1.EmployeeMedicalHistoryController.create);
 router.get("/medical-history/:id", employee_1.EmployeeMedicalHistoryController.getById);

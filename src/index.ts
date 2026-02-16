@@ -18,7 +18,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://vital-vault-plus.vercel.app",
+    origin: process.env.FRONTEND_ORIGIN,
     credentials: true,
   }),
 );

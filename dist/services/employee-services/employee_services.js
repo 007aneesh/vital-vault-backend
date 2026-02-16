@@ -14,6 +14,56 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = require("../../utils/db");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const buildWhereClause = (filterModel) => {
+    if (!filterModel)
+        return {};
+    const where = {};
+    for (const [key, value] of Object.entries(filterModel)) {
+        if (value === null || value === undefined || value === "")
+            continue;
+        if (typeof value === "string") {
+            where[key] = { contains: value, mode: "insensitive" };
+        }
+        else if (typeof value === "object" && "min" in value && "max" in value) {
+            where[key] = { gte: value.min, lte: value.max };
+        }
+        else if (typeof value === "object" && "min" in value) {
+            where[key] = { gte: value.min };
+        }
+        else if (typeof value === "object" && "max" in value) {
+            where[key] = { lte: value.max };
+        }
+        else {
+            where[key] = value;
+        }
+    }
+    return where;
+};
+const getSSRMEmployees = (params) => __awaiter(void 0, void 0, void 0, function* () {
+    const { pageSize, sortModel, filterModel } = params;
+    const where = buildWhereClause(filterModel);
+    const orderBy = sortModel
+        ? { [sortModel.sort_by]: sortModel.type }
+        : undefined;
+    const [data, totalCount] = yield Promise.all([
+        db_1.prisma.employee.findMany({
+            skip: 0,
+            take: pageSize,
+            where,
+            orderBy,
+            include: {
+                medical_history: true,
+                roles: {
+                    include: {
+                        role: true,
+                    },
+                },
+            },
+        }),
+        db_1.prisma.employee.count({ where }),
+    ]);
+    return { rows: data, totalRows: totalCount };
+});
 const updateDetails = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         return yield db_1.prisma.employee.update({
@@ -39,18 +89,6 @@ const changePassword = (id, newPassword) => __awaiter(void 0, void 0, void 0, fu
         throw new Error(`Error changing password: ${error}`);
     }
 });
-const getAllEmployees = () => __awaiter(void 0, void 0, void 0, function* () {
-    return yield db_1.prisma.employee.findMany({
-        include: {
-            medical_history: true,
-            roles: {
-                include: {
-                    role: true,
-                },
-            },
-        },
-    });
-});
 const getEmployeeById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return yield db_1.prisma.employee.findUnique({
         where: { id },
@@ -68,6 +106,6 @@ exports.default = {
     updateDetails,
     changePassword,
     getEmployeeById,
-    getAllEmployees,
+    getSSRMEmployees,
 };
 //# sourceMappingURL=employee_services.js.map

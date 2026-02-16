@@ -17,10 +17,15 @@ const handle_response_1 = require("../../utils/handle_response");
 const singleton_class_1 = require("../../utils/singleton_class");
 const db_1 = require("../../utils/db");
 class EmployeeController {
-    getAllEmployees(req, res) {
+    getSSRMEmployees(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const employees = yield employee_services_1.default.getAllEmployees();
-            return (0, handle_response_1.sendSuccess)(res, "success", 200, employees);
+            const { pageSize, sortModel, filterModel } = req.body;
+            const result = yield employee_services_1.default.getSSRMEmployees({
+                pageSize: pageSize || 50,
+                sortModel,
+                filterModel,
+            });
+            return (0, handle_response_1.sendSuccess)(res, "success", 200, result);
         });
     }
     // Get employee by ID

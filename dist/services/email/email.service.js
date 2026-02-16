@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// resend email service
-const resend_1 = require("resend");
-const resend = new resend_1.Resend(process.env.RESEND_API_KEY);
-exports.default = resend;
+exports.transporter = void 0;
+// nodemailer email service
+const nodemailer_config_1 = require("../../config/nodemailer.config");
+exports.transporter = (0, nodemailer_config_1.createTransporter)();
+exports.default = exports.transporter;
 //# sourceMappingURL=email.service.js.map

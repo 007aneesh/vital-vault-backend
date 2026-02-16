@@ -90,12 +90,12 @@ exports.register = (0, catchErrors_1.default)((req, res) => __awaiter(void 0, vo
     const newOrganisation = yield db_1.prisma.organisation.create({
         data: {
             name,
-            contact,
-            secondary_contact,
+            contact: parseInt(contact),
+            secondary_contact: secondary_contact ? parseInt(secondary_contact) : null,
             address,
             state,
             city,
-            pincode,
+            pincode: parseInt(pincode),
             plan,
             access_level,
             image,
@@ -117,10 +117,12 @@ exports.register = (0, catchErrors_1.default)((req, res) => __awaiter(void 0, vo
             expires_at: (0, date_1.oneHourFromNow)(),
         },
     });
-    console.log("verificationCode", verificationCode);
     const url = `${process.env.APP_ORIGIN}/api/v1/auth/email/verify/${verificationCode.user_id}`;
-    const { error } = yield (0, send_mail_1.sendMail)(Object.assign({ to: email }, (0, email_template_1.getVerifyEmailTemplate)(url)));
-    if (error) {
+    try {
+        yield (0, send_mail_1.sendMail)(Object.assign({ to: email }, (0, email_template_1.getVerifyEmailTemplate)(url)));
+    }
+    catch (error) {
+        console.error("Failed to send verification email:", error);
         return (0, handle_response_1.sendError)(res, "Failed to send verification email", 500);
     }
     // while register as i am gonna send email verification code to user and after that email only he will be allowed to login so creating session and send cookies to user at point is useless
@@ -198,11 +200,11 @@ const sendPasswordResetEmail = (req, res, email) => __awaiter(void 0, void 0, vo
             },
         });
         const url = `${process.env.FRONTEND_ORIGIN}/reset-password?code=${verificationCode.id}&exp=${expiresAt.getTime()}`;
-        const { data, error } = yield (0, send_mail_1.sendMail)(Object.assign({ to: user.email }, (0, email_template_1.getPasswordResetTemplate)(url)));
-        (0, appAssert_1.default)(data === null || data === void 0 ? void 0 : data.id, http_1.INTERNAL_SERVER_ERROR, `${error === null || error === void 0 ? void 0 : error.name} - ${error === null || error === void 0 ? void 0 : error.message}`);
+        const mailInfo = yield (0, send_mail_1.sendMail)(Object.assign({ to: user.email }, (0, email_template_1.getPasswordResetTemplate)(url)));
+        (0, appAssert_1.default)(mailInfo === null || mailInfo === void 0 ? void 0 : mailInfo.messageId, http_1.INTERNAL_SERVER_ERROR, "Failed to send password reset email");
         return (0, handle_response_1.sendSuccess)(res, "Email sent successfully", 200, {
             url,
-            email_id: data.id,
+            email_id: mailInfo.messageId,
         });
     }
     catch (error) {
