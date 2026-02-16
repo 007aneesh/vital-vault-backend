@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
+// import cors from "cors";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -23,12 +23,12 @@ app.use(
 );
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["*"],
-    credentials: false,
-  }),
-);
+// app.use(
+//   cors({
+//     origin: ["*"],
+//     credentials: false,
+//   }),
+// );
 
 app.use(cookieParser());
 
