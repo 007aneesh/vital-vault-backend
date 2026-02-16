@@ -14,7 +14,7 @@ import AppError from "./utils/appError";
 import { globalErrorHandler } from "./middlewares/globalErrorMiddleware";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
@@ -49,6 +49,4 @@ app.all("*", (req, res, next) => {
 
 app.use(globalErrorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server started at PORT: ${PORT}`);
-});
+export default app;
