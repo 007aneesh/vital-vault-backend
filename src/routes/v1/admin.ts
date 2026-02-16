@@ -2,8 +2,11 @@ import express from "express";
 import { addEmployee } from "../../services/settings/add_employee";
 import { OrganisationController } from "../../controllers/organisation";
 import { InsuranceController } from "../../controllers/common";
+import DashboardController from "../../controllers/dashboard/dashboard_controller";
 
 const router = express.Router();
+
+router.get("/dashboard", DashboardController.getDashboardStats);
 
 // employee registration routes
 router.post("/add-employee", addEmployee);
