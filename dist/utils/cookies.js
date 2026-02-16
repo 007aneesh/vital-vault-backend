@@ -5,7 +5,7 @@ const date_1 = require("./date");
 exports.REFRESH_PATH = "/api/v1/auth";
 const secure = process.env.NODE_ENV === "production";
 const defaults = {
-    sameSite: "strict",
+    sameSite: "none",
     httpOnly: true,
     secure,
 };
