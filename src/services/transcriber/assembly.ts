@@ -28,16 +28,20 @@ const ASSEMBLYAI_BASE_URL = "https://api.assemblyai.com/v2";
 const POLL_INTERVAL = 3000;
 const MAX_RETRIES = 600;
 
-if (!ASSEMBLYAI_API_KEY) {
-  throw new Error("ASSEMBLYAI_API_KEY is not defined in environment variables");
-}
+const getAxiosInstance = () => {
+  if (!ASSEMBLYAI_API_KEY) {
+    throw new Error(
+      "ASSEMBLYAI_API_KEY is not defined in environment variables",
+    );
+  }
 
-const axiosInstance = axios.create({
-  baseURL: ASSEMBLYAI_BASE_URL,
-  headers: {
-    Authorization: ASSEMBLYAI_API_KEY,
-  },
-});
+  return axios.create({
+    baseURL: ASSEMBLYAI_BASE_URL,
+    headers: {
+      Authorization: ASSEMBLYAI_API_KEY,
+    },
+  });
+};
 
 export const uploadAudioToAssemblyAI = async (
   filePath: string,
@@ -71,6 +75,7 @@ export const requestTranscription = async (
   audioUrl: string,
 ): Promise<string> => {
   try {
+    const axiosInstance = getAxiosInstance();
     const response = await axiosInstance.post("/transcript", {
       audio_url: audioUrl,
     });
@@ -88,8 +93,9 @@ export const pollTranscriptionStatus = async (
   transcriptId: string,
 ): Promise<AssemblyAITranscriptResponse> => {
   let retries = 0;
+  const axiosInstance = getAxiosInstance();
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const poll = async () => {
       try {
         const response = await axiosInstance.get<AssemblyAITranscriptResponse>(
@@ -104,9 +110,7 @@ export const pollTranscriptionStatus = async (
           retries++;
           if (retries >= MAX_RETRIES) {
             reject(
-              new Error(
-                "Transcription polling timeout exceeded (30 minutes)",
-              ),
+              new Error("Transcription polling timeout exceeded (30 minutes)"),
             );
           } else {
             setTimeout(poll, POLL_INTERVAL);
@@ -129,19 +133,15 @@ export const pollTranscriptionStatus = async (
 export const transcribeWithAssemblyAI = async (
   filePath: string,
 ): Promise<TranscriptionResult> => {
-  try {
-    const audioUrl = await uploadAudioToAssemblyAI(filePath);
-    const transcriptId = await requestTranscription(audioUrl);
-    const transcript = await pollTranscriptionStatus(transcriptId);
+  const audioUrl = await uploadAudioToAssemblyAI(filePath);
+  const transcriptId = await requestTranscription(audioUrl);
+  const transcript = await pollTranscriptionStatus(transcriptId);
 
-    return {
-      transcriptText: transcript.text,
-      confidence: transcript.confidence,
-      duration: transcript.duration,
-      wordCount: transcript.words?.length || 0,
-      fullTranscript: transcript,
-    };
-  } catch (error) {
-    throw error;
-  }
+  return {
+    transcriptText: transcript.text,
+    confidence: transcript.confidence,
+    duration: transcript.duration,
+    wordCount: transcript.words?.length || 0,
+    fullTranscript: transcript,
+  };
 };

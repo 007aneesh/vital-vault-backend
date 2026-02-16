@@ -15,15 +15,15 @@ interface MedicationExtractionResult {
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-if (!GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is not defined in environment variables");
-}
-
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-
 export const extractMedicationInfo = async (
   transcriptText: string,
 ): Promise<MedicationExtractionResult> => {
+  if (!GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY is not defined in environment variables");
+  }
+
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
