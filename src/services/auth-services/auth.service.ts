@@ -25,7 +25,6 @@ import {
 import appAssert from "../../utils/appAssert";
 import { INTERNAL_SERVER_ERROR } from "../../utils/http";
 import getClientInfo from "../../utils/clientInfo";
-import { Prisma } from "@prisma/client";
 import catchErrors from "../../utils/catchErrors";
 
 export const login = catchErrors(async (req: Request, res: Response) => {
@@ -48,7 +47,7 @@ export const login = catchErrors(async (req: Request, res: Response) => {
     const session = await prisma.session.create({
       data: {
         user_id: is_existing.ref_id,
-        user_agent: user_agent as unknown as Prisma.JsonValue,
+        user_agent: user_agent as unknown as any,
         expires_at: thirtyDaysFromNow(),
       },
     });
@@ -123,12 +122,12 @@ export const register = catchErrors(async (req: Request, res: Response) => {
   const newOrganisation = await prisma.organisation.create({
     data: {
       name,
-      contact,
-      secondary_contact,
+      contact: parseInt(contact),
+      secondary_contact: secondary_contact ? parseInt(secondary_contact) : null,
       address,
       state,
       city,
-      pincode,
+      pincode: parseInt(pincode),
       plan,
       access_level,
       image,
@@ -153,16 +152,15 @@ export const register = catchErrors(async (req: Request, res: Response) => {
     },
   });
 
-  console.log("verificationCode", verificationCode);
-
   const url = `${process.env.APP_ORIGIN}/api/v1/auth/email/verify/${verificationCode.user_id}`;
 
-  const { error } = await sendMail({
-    to: email,
-    ...getVerifyEmailTemplate(url),
-  });
-
-  if (error) {
+  try {
+    await sendMail({
+      to: email,
+      ...getVerifyEmailTemplate(url),
+    });
+  } catch (error) {
+    console.error("Failed to send verification email:", error);
     return sendError(res, "Failed to send verification email", 500);
   }
 
@@ -269,20 +267,20 @@ export const sendPasswordResetEmail = async (
       verificationCode.id
     }&exp=${expiresAt.getTime()}`;
 
-    const { data, error } = await sendMail({
+    const mailInfo = await sendMail({
       to: user.email,
       ...getPasswordResetTemplate(url),
     });
 
     appAssert(
-      data?.id,
+      mailInfo?.messageId,
       INTERNAL_SERVER_ERROR,
-      `${error?.name} - ${error?.message}`,
+      "Failed to send password reset email",
     );
 
     return sendSuccess(res, "Email sent successfully", 200, {
       url,
-      email_id: data.id,
+      email_id: mailInfo.messageId,
     });
   } catch (error: any) {
     console.log("SendPasswordResetError:", error.message);

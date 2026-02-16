@@ -23,7 +23,7 @@ router.post(
   verifyAccessToken,
   EmployeeController.changePassword,
 );
-router.get("/all", verifyAccessToken, EmployeeController.getAllEmployees);
+router.post("/ssrm", verifyAccessToken, EmployeeController.getSSRMEmployees);
 router.get("/:id", verifyAccessToken, EmployeeController.getEmployeeById);
 
 router.post("/medical-history/create", EmployeeMedicalHistoryController.create);

@@ -4,9 +4,14 @@ import { sendSuccess } from "../../utils/handle_response";
 import { SingletonClass } from "../../utils/singleton_class";
 
 class PatientController {
-  async getAllPatients(req: Request, res: Response) {
-    const patients = await PatientService.getAllPatients();
-    return sendSuccess(res, "success", 200, patients);
+  async getSSRMPatients(req: Request, res: Response) {
+    const { pageSize, sortModel, filterModel } = req.body;
+    const result = await PatientService.getSSRMPatients({
+      pageSize: pageSize || 50,
+      sortModel,
+      filterModel,
+    });
+    return sendSuccess(res, "success", 200, result);
   }
 
   async getPatientById(req: Request, res: Response) {

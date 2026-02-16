@@ -1,4 +1,4 @@
-import resend from "../services/email/email.service";
+import transporter from "../services/email/email.service";
 
 type Params = {
   to: string;
@@ -9,14 +9,14 @@ type Params = {
 
 const getFromEmail = () =>
   process.env.NODE_ENV === "local"
-    ? "onboarding@resend.dev"
+    ? "aneeshx000@gmail.com"
     : String(process.env.EMAIL_SENDER);
 
 const getToEmail = (to: string) =>
-  process.env.NODE_ENV === "local" ? "aneeshx000@gmail.com" : to;
+  process.env.NODE_ENV === "local" ? "aneesh@wizcommerce.com" : to;
 
 export const sendMail = async ({ to, subject, text, html }: Params) =>
-  await resend.emails.send({
+  await transporter.sendMail({
     from: getFromEmail(),
     to: getToEmail(to),
     subject,

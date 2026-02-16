@@ -5,9 +5,14 @@ import { SingletonClass } from "../../utils/singleton_class";
 import { prisma } from "../../utils/db";
 
 class EmployeeController {
-  async getAllEmployees(req: Request, res: Response) {
-    const employees = await employeeService.getAllEmployees();
-    return sendSuccess(res, "success", 200, employees);
+  async getSSRMEmployees(req: Request, res: Response) {
+    const { pageSize, sortModel, filterModel } = req.body;
+    const result = await employeeService.getSSRMEmployees({
+      pageSize: pageSize || 50,
+      sortModel,
+      filterModel,
+    });
+    return sendSuccess(res, "success", 200, result);
   }
 
   // Get employee by ID

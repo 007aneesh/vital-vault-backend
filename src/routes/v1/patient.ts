@@ -8,7 +8,7 @@ import { VisitHistoryController } from "../../controllers/common";
 const router = Router();
 
 // patient routes
-router.get("/all", PatientController.getAllPatients);
+router.post("/ssrm", PatientController.getSSRMPatients);
 router.get("/:id", PatientController.getPatientById);
 router.put("/:id", PatientController.updatePatient);
 router.delete("/:id", PatientController.deletePatient);

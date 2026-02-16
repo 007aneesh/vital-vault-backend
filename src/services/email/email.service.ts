@@ -1,6 +1,6 @@
-// resend email service
-import { Resend } from "resend";
+// nodemailer email service
+import { createTransporter } from "../../config/nodemailer.config";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+export const transporter = createTransporter();
 
-export default resend;
+export default transporter;

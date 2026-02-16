@@ -1,9 +1,62 @@
 import { prisma } from "../../utils/db";
 
+interface SSRMParams {
+  pageSize: number;
+  sortModel?: {
+    sort_by: string;
+    type: "asc" | "desc";
+  };
+  filterModel?: Record<string, any>;
+}
+
 class PatientService {
-  async getAllPatients() {
-    const patients = await prisma.patient.findMany();
-    return patients;
+  private buildWhereClause(filterModel?: Record<string, any>) {
+    if (!filterModel) return {};
+
+    const where: any = {};
+
+    for (const [key, value] of Object.entries(filterModel)) {
+      if (value === null || value === undefined || value === "") continue;
+
+      if (typeof value === "string") {
+        where[key] = { contains: value, mode: "insensitive" };
+      } else if (
+        typeof value === "object" &&
+        "min" in value &&
+        "max" in value
+      ) {
+        where[key] = { gte: value.min, lte: value.max };
+      } else if (typeof value === "object" && "min" in value) {
+        where[key] = { gte: value.min };
+      } else if (typeof value === "object" && "max" in value) {
+        where[key] = { lte: value.max };
+      } else {
+        where[key] = value;
+      }
+    }
+
+    return where;
+  }
+
+  async getSSRMPatients(params: SSRMParams) {
+    const { pageSize, sortModel, filterModel } = params;
+
+    const where = this.buildWhereClause(filterModel);
+    const orderBy = sortModel
+      ? { [sortModel.sort_by]: sortModel.type }
+      : undefined;
+
+    const [data, totalCount] = await Promise.all([
+      prisma.patient.findMany({
+        skip: 0,
+        take: pageSize,
+        where,
+        orderBy,
+      }),
+      prisma.patient.count({ where }),
+    ]);
+
+    return { rows: data, totalRows: totalCount };
   }
 
   async getPatientById(id: string) {
