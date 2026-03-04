@@ -1,4 +1,4 @@
-﻿// src/routes/uploadRoutes.js
+// src/routes/uploadRoutes.js
 import express from "express";
 import uploadMiddleware from "../../middlewares/uploadMiddleware";
 import { globalErrorHandler } from "../../middlewares/globalErrorMiddleware";
@@ -53,6 +53,18 @@ router.post(
   }),
   globalErrorHandler,
   uploadController.uploadProfileImage,
+);
+
+router.post(
+  "/patient-image",
+  uploadMiddleware({
+    maxSize: 5 * 1024 * 1024,
+    width: 800,
+    height: 800,
+    fit: "inside",
+  }),
+  globalErrorHandler,
+  uploadController.uploadPatientImage,
 );
 
 export default router;

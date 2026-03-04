@@ -1,4 +1,4 @@
-﻿import { Request, Response } from "express";
+import { Request, Response } from "express";
 import uploadService from "../../services/uploads/uploadService";
 import { sendError, sendSuccess } from "../../utils/handle_response";
 import { SingletonClass } from "../../utils/singleton_class";
@@ -95,6 +95,17 @@ class UploadController {
       "Profile image uploaded successfully",
       200,
       response,
+    );
+  };
+
+  /** Upload patient image (returns URL for use in add-patient or update patient) */
+  uploadPatientImage = async (req: Request, res: Response) => {
+    const results = await this.handleUpload(req, "patient");
+    return sendSuccess(
+      res,
+      "Patient image uploaded successfully",
+      200,
+      results,
     );
   };
 }

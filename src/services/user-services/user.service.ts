@@ -27,14 +27,24 @@ export const getMe = async (req: any, res: Response) => {
       user_details = { ...user.patient };
     }
 
+    const organisation_id =
+      user.type === UserType.ORGANISATION && user.organisation
+        ? user.organisation.id
+        : user.type === UserType.EMPLOYEE && user.employee
+          ? user.employee.organisationId
+          : user.type === UserType.PATIENT && user.patient
+            ? user.patient.organisation_id
+            : undefined;
+
     const response_data = {
-      id: user.id,
+      id: user.ref_id,
       email: user.email,
       username: user.username,
       type: user.type,
       is_active: user.is_active,
       verified: user.verified,
       last_login_at: user.last_login_at,
+      ...(organisation_id !== undefined && { organisation_id }),
       ...user_details,
     };
 
