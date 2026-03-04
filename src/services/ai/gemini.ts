@@ -25,7 +25,7 @@ export const extractMedicationInfo = async (
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
     const prompt = `
 You are a medical data extraction assistant. Extract medication information from the following medical transcript.

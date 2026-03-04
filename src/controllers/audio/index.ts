@@ -1,1 +1,1 @@
-export { transcribeAudioWithAssemblyAI } from "./transcriptionController";
+export { parseTranscript } from "./transcriptionController";
