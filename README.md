@@ -7,7 +7,7 @@
 
 ## 📌 Overview
 
-Vital Vault is a secure and scalable healthcare data management system that ensures privacy and efficiency in handling medical records. This backend service is built using **Node.js**, **Express.js**, **PostgreSQL**, and **Prisma ORM**, with a config-based multi-tenant system and AI-powered voice transcription.
+Vital Vault is a secure and scalable healthcare data management system that ensures privacy and efficiency in handling medical records. This backend service is built using **Node.js**, **Express.js**, **Mongodb**, and **Prisma ORM**, with a config-based multi-tenant system and AI-powered voice transcription.
 
 ## ✨ Features
 
@@ -21,7 +21,7 @@ Vital Vault is a secure and scalable healthcare data management system that ensu
 ## 🚀 Tech Stack
 
 - **Backend:** Node.js, Express.js, TypeScript, Prisma ORM
-- **Database:** PostgreSQL
+- **Database:** Mongodb
 - **Authentication:** JWT
 - **AI Integration:** OpenAI Whisper API
 - **Deployment:** Vercel
